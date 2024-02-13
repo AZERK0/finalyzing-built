@@ -1,0 +1,681 @@
+@import "../../styles.scss";
+
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  overflow: hidden !important;
+  background: $surface-000;
+}
+
+.separator {
+  height: 70%;
+  width: 2px;
+  min-width: 2px;
+  background-color: $surface-400;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  white-space: nowrap;
+  padding: 10px 20px;
+  background: $surface-100;
+  font-size: 0.95em;
+}
+
+.info > a, .info > div {
+  height: 5vw
+}
+
+.info a {
+  cursor: pointer;
+  width: fit-content;
+  text-decoration: none;
+}
+
+.info a img {
+  height: 55%;
+}
+
+.info .country-list {
+  display: flex;
+  gap: 10px;
+}
+
+.info .symbol:hover {
+  background: $surface-200
+}
+
+.info .symbol {
+  align-items: center;
+  padding: 0 20px 0 8px;
+  border-radius: 10px;
+  transition: background .3s;
+  background: $surface-200
+}
+
+.info .symbol.deletable {
+  cursor: pointer
+}
+
+.info .symbol .icon, .info a {
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.info .symbol .icon {
+  position: relative;
+  height: 3.5vw;
+  width: 3.5vw;
+  box-sizing: border-box;
+  margin: 0 10px 0 0;
+  color: $surface-200;
+  font-weight: 900;
+  background-color: $text-100;
+  border-radius: 50%
+}
+
+.info .symbol .icon * {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.info .symbol .icon img {
+  height: auto;
+  width: 2vw;
+}
+
+.info .symbol .icon i {
+  opacity: 0;
+  transition: opacity .2s;
+  text-shadow: 0 0 5px white;
+}
+
+.info .symbol .name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start
+}
+
+.info .symbol .name h1 {
+  white-space: nowrap;
+  overflow-x: hidden;
+  max-width: 250px;
+  text-overflow: ellipsis;
+}
+
+.info h1 {
+  font-size: 1.3em;
+  font-weight: 900;
+}
+
+.info h2 {
+  font-size: 1em;
+  font-weight: 400;
+  color: $text-200
+}
+
+.info .symbol {
+  display: flex;
+}
+
+.add-country-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5vw;
+  width: 5vw;
+  background: $surface-200;
+  transition: background .3s;
+}
+
+.add-country-btn:hover {
+  background: $surface-300
+}
+
+.tabs {
+  display: grid;
+  align-items: start;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7px;
+  width: fit-content;
+  overflow-y: hidden;
+  overflow-x: auto;
+  transform: translateY(1.65px);
+  padding-right: 15px;
+  z-index: 2;
+}
+
+.tabs .tab {
+  display: flex;
+  justify-content: flex-start;
+  position: relative;
+  padding: 3px 80px 5px 20px;
+  float: left;
+  cursor: pointer;
+  background-color: $surface-200;
+  border: 1px solid $neutral-100;
+  border-radius: 10px;
+  transition: background-color .3s;
+  font-family: "Open Sans", sans-serif;
+  vertical-align: middle;
+  font-size: 1.1em;
+  color: $text-100;
+  font-weight: 700
+}
+
+.tabs .tab:not(.selected):hover {
+  background-color: $surface-300;
+}
+
+.tabs .selected {
+  background-color: $surface-100;
+  padding-bottom: 14.25px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border: 1px solid $neutral-100;
+  border-bottom: none;
+  transition: background-color 0s;
+}
+
+.tabs .tab:not(:first-child).selected:before, .tabs .selected:after {
+  position: absolute;
+  content: " ";
+  width: 15px;
+  height: 15px;
+  border-bottom: 2px solid $surface-400;
+  bottom: 0;
+}
+
+.tabs .tab:not(:first-child).selected:before {
+  border-bottom-right-radius: 100%;
+  left: -15px;
+  box-shadow: 5px 5px 0 0 #121212;
+}
+
+.tabs .selected:after {
+  border-bottom-left-radius: 100%;
+  right: -15px;
+  box-shadow: -5px 5px 0 0 #121212;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.chart-tab {
+  display: flex;
+  gap: 10px;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.chart-and-controls-wrapper {
+  display: flex;
+  gap: 5px;
+  flex-grow: 1;
+}
+
+.app-chart {
+  position: relative;
+  display: flex;
+  background: $surface-100;
+  border-radius: 0 10px 10px 10px;
+  border: 1px solid $neutral-100;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.indi-title {
+  display: flex;
+  gap: 30px;
+}
+
+.app-chart .indi-title {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.indi-title h1 {
+  font-size: 1.5em;
+  font-weight: 900;
+  text-align: center;
+}
+
+.carousel-container {
+  display: flex;
+  width: 100%;
+}
+
+.carousel-wrapper {
+  display: flex;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+canvas {
+  width: 100% !important;
+}
+
+.chart-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px;
+  background: $surface-100;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.chart-controls .data-category, .data-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center
+}
+
+.chart-controls .data-category {
+  gap: 10px;
+}
+
+.data-info {
+  width: 100%;
+  cursor: pointer;
+}
+
+.data-details, .data-values {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%
+}
+
+.data-details h1 {
+  font-size: 1em;
+  font-weight: 900;
+  margin-right: 10px;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  overflow: hidden;
+}
+
+.data-details .data-buttons-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 5px
+}
+
+.data-details .data-buttons-wrapper button {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background-color: $surface-300;
+  font-size: 0.8em;
+  font-weight: 900;
+  text-align: center
+}
+
+.data-values {
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-top: 5px;
+  margin-left: 15px
+}
+
+.data-values > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start
+}
+
+.data-values .arrow {
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+  border-bottom: 2px solid $surface-400;
+  border-left: 2px solid $surface-400;
+  border-radius: 0 0 0 3px
+}
+
+.data-values h2 {
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: capitalize
+}
+
+.data-values h2 i {
+  color: $text-200;
+  font-weight: 400
+}
+
+.data-values h2 .pos {
+  color: $green-100
+}
+
+.data-values h2 .neg {
+  color: $red-100
+}
+
+.add-indicator-btn {
+  padding: 5px 20px;
+  background-color: $primary-100;
+  font-size: 0.9em;
+  font-weight: 700;
+  border-radius: 5px;
+  transition: background .2s
+}
+
+.add-indicator-btn:hover {
+  background-color: $primary-200
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  top: 95%;
+  margin-top: 20px;
+  font-size: 0.7em;
+}
+
+.footer * {
+  color: $text-200;
+}
+
+.table-tab {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-grow: 1;
+  background: $surface-100;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.table-tab .content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 90%;
+  max-width: 1080px;
+  padding-bottom: 50px;
+}
+
+.table-tab .header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 30px 0;
+  background-color: $surface-100;
+  border-bottom: 1px solid $neutral-100;
+}
+
+.blue-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 15px;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.2s;
+  color: $text-100;
+  background-color: $primary-100
+}
+
+.blue-btn:hover {
+  background-color: $primary-200
+}
+
+.search-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  gap: 10px;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba($surface-100, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  width: 80%;
+  max-width: 900px;
+  box-sizing: border-box;
+  background: $surface-200;
+}
+
+form input {
+  padding: 5px 10px;
+  background-color: $text-100;
+  width: 25vw;
+  max-width: 280px;
+  min-width: 150px;
+  color: black;
+  font-size: 1em;
+}
+
+form .form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+form .form-actions button {
+  padding: 5px 10px;
+  font-weight: 900;
+  font-size: 1em;
+  transition: background .2s
+}
+
+form .form-actions button.apply {
+  background-color: $primary-100;
+}
+
+form .form-actions button.apply:hover {
+  background-color: $primary-200;
+}
+
+form .form-actions button.cancel:hover {
+  background-color: $surface-300;
+}
+
+.autocomplete-container {
+  height: 50vh;
+  width: 80%;
+  max-width: 900px;
+}
+
+.search-tabs {
+  width: fit-content;
+  background: $surface-100;
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+}
+
+.search-tabs button {
+  padding: 5px 20px;
+}
+
+.search-tabs button.selected {
+  background: $surface-200;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 5px 20px 5px rgba(10, 10, 10, 0.5);
+}
+
+.autocomplete {
+  overflow: hidden;
+  background: $surface-200;
+  border-radius: 0 10px 10px 10px;
+}
+
+.autocomplete table {
+  background: $surface-200;
+  width: 100%;
+}
+
+.autocomplete table .result {
+  background-color: $surface-200;
+  cursor: pointer;
+}
+
+.autocomplete table :hover {
+  background: $surface-300;
+}
+
+.autocomplete table tr {
+  padding: 0 20px;
+}
+
+.autocomplete table th, td {
+  padding: 10px !important;
+  color: $text-100;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid $neutral-100;
+}
+
+.autocomplete table div {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+.autocomplete table th {
+  font-weight: bold;
+  background: $surface-200;
+}
+
+.autocomplete table #icon {
+  justify-content: center;
+  height: 15px;
+  width: 15px;
+  padding: 5px;
+  color: black;
+  font-weight: 700;
+  background-color: $text-100;
+  border-radius: 50%;
+}
+
+.selected-row {
+  background-color: $surface-300;
+}
+
+@media screen and (max-width: 480px) {
+  .annotation-buttons > button {
+    height: 40px;
+    width: 40px;
+  }
+
+  .annotation-buttons button svg {
+    height: 30px;
+    width: 30px;
+  }
+
+  .chart-and-controls-wrapper {
+    flex-direction: column;
+  }
+
+  .chart-controls {
+    width: auto;
+    height: 95px;
+    font-size: 14px;
+  }
+
+  .add-indicator-btn {
+    width: fit-content;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  form, .autocomplete-container {
+    width: 95%;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .info > a, .info > div, .add-country-btn {
+    height: 45px;
+  }
+
+  .add-country-btn {
+    width: 45px;
+  }
+
+  .info .symbol .icon {
+    height: 30px;
+    width: 30px;
+  }
+
+  .info .symbol .icon img {
+    width: 17px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .info > a, .info > div, .add-country-btn {
+    height: 55px;
+  }
+
+  .add-country-btn {
+    width: 55px;
+  }
+
+  .info .symbol .icon {
+    height: 40px;
+    width: 40px;
+  }
+
+  .info .symbol .icon img {
+    width: 24px;
+  }
+}
+
+@media (hover: hover) {
+  .info .symbol.deletable:hover .icon img {
+    filter: blur(3px);
+  }
+
+  .info .symbol:hover .icon i {
+    opacity: 1;
+  }
+}

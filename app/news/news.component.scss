@@ -1,0 +1,268 @@
+@import "../../styles.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-grow: 1;
+  background: $surface-100;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border: 1px solid $neutral-100;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px 5px rgba(10, 10, 10, 0.5);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 90%;
+  max-width: 1280px;
+  padding-bottom: 50px;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 50px 0;
+  background-color: $surface-100;
+  border-bottom: 1px solid $neutral-100;
+}
+
+header h1 {
+  font-size: 2.2em;
+  font-weight: 900
+}
+
+.sentiments-wrapper {
+  position: relative;
+  width: fit-content;
+}
+
+.sentiments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  width: fit-content;
+  padding: 20px 50px;
+  margin-top: 20px;
+  background: $surface-200;
+}
+
+.sentiments h2 {
+  font-weight: 900;
+}
+
+.gauge-container {
+  display: flex;
+  gap: 30px;
+}
+
+.gauge-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.gauge-wrapper > div {
+  width: 160px;
+  height: 85px;
+  overflow: hidden;
+}
+
+.gauge {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border: double 10px transparent;
+  border-radius: 50%;
+  background-image: linear-gradient($surface-000, $surface-200, $surface-200),
+  linear-gradient(to right, #FF4E50, #FC913A, #F9D423, #A8EB12, #2AC940);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+}
+
+.gauge .mid {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  background-color: $text-100;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.gauge .pointer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 60px;
+  height: 3px;
+  background-color: $text-100;
+  transform-origin: left center;
+  animation: pointer-animation 3s infinite;
+  transform: translateY(-50%) rotate(calc(1.8deg * var(--value) - 90deg));
+}
+
+.premium-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.premium-feature button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 15px;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.2s;
+  color: $text-100;
+  background-color: $primary-100
+}
+
+.news {
+  position: relative;
+  max-height: 300px;
+  padding: 30px;
+  overflow: hidden;
+  text-decoration: none;
+  background-color: $surface-200;
+}
+
+.news .mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, transparent 75%, $surface-100 100%);
+}
+
+.news h2 {
+  max-width: 70%;
+}
+
+.news h3 {
+  color: $text-200;
+  font-weight: lighter;
+  margin: 5px 0;
+}
+
+.news a {
+  color: $blue-100;
+  text-decoration: none;
+}
+
+.news .symbols {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.news .symbols div {
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 7px;
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  background-color: $surface-300;
+  color: $text-100;
+  font-size: 0.7em;
+}
+
+.news p {
+  font-size: 1em;
+  line-height: 1.5;
+  text-align: justify;
+  color: $text-200;
+  margin-top: 30px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 50px;
+}
+
+mat-spinner {
+  stroke: $surface-500
+}
+
+@keyframes pointer-animation {
+  0% {
+    transform: rotate(calc(180deg * var(--value) - 90deg))
+  }
+
+  25% {
+    transform: rotate(calc(1deg + 180deg * var(--value) - 90deg))
+  }
+
+  50% {
+    transform: rotate(calc(-1deg + 180deg * var(--value) - 90deg))
+  }
+
+  100% {
+    transform: rotate(calc(180deg * var(--value) - 90deg))
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .gauge-container {
+    gap: 20px;
+  }
+
+  .gauge-wrapper {
+    gap: 5px;
+  }
+
+  .gauge-wrapper > div {
+    width: 120px;
+    height: 65px;
+  }
+
+  .gauge {
+    width: 100px;
+    height: 100px;
+  }
+
+  .gauge .mid {
+    width: 7px;
+    height: 7px;
+  }
+
+  .gauge .pointer {
+    width: 40px;
+    height: 3px;
+  }
+
+  .news {
+    padding: 10px;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .news h2 {
+    max-width: 100%;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+}

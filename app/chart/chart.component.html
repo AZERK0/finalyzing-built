@@ -1,0 +1,22 @@
+<a href="/" target="_blank" [ngStyle]="{'transform': data['historical'][0] ? 'translateY(-40px)' : 'translateY(0)' }">
+  <img src="/assets/img/logo_light_trans_long.webp" alt="finalyzing" [ngStyle]="{'filter': colorTheme=='light' ? 'invert(1)' : 'invert(0)'}">
+</a>
+
+<div #chartArea class="charts" id="charts">
+  <div class="mainChart">
+    <div class="chartWrapper" #chartWrapper id="chartWrapper" (mousemove)="cursorPosAxis($event, -1)" (wheel)="zoom($event); cursorPosAxis($event, -1)" (panmove)="pan($event)" (panend)="this.isLastCor = false; this.isPanning = false" (window:resize)="resize()">
+      <canvas id="hud-0" [width]="chartWrapper.offsetWidth" [height]="chartWrapper.offsetHeight" style="z-index: 1"></canvas>
+    </div>
+    <canvas class="yAxis" width="70" id="mainAxisY"></canvas>
+  </div>
+</div>
+
+<div id="xAxisWrapper" class="xAxisWrapper">
+  <canvas #xAxis class="xAxis" height="40" (window:resize)="updateYScale()"></canvas>
+  <div>
+    <div class="set-scale-wrapper">
+      <button type="button" (click)="setScaleType('normal')" [ngStyle]="{'color':chartType === 'normal' ? '#33369F' : '#a5a5a5' }">normal</button>
+      <button type="button" (click)="setScaleType('log')" [ngStyle]="{'color':chartType === 'log' ? '#33369F' : '#a5a5a5' }">log</button>
+    </div>
+  </div>
+</div>

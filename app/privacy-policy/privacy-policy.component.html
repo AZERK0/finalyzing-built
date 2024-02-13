@@ -1,0 +1,37 @@
+<app-header></app-header>
+
+<h1 class="title">Privacy Policy</h1>
+<p class="sub-title">The privacy policy explains how Finalyzing collects and uses user data regarding the use of our services (name, email, etc.).</p>
+
+<div class="container">
+    <ul class="border-style box-shadow" [style.margin-top]="firstCategory.offsetTop + 'px'">
+        <li><h2>Summary</h2></li>
+        <li><a [style.color]="inViewId == 'collect-and-use' ? '#1bafff' : '#dad9d5'" href="/privacy-policy#collect-and-use">&bull;&nbsp; Collection And Use</a></li>
+        <li><a [style.color]="inViewId == 'sharing' ? '#1bafff' : '#dad9d5'" href="/privacy-policy#sharing">&bull;&nbsp; Sharing Personal Information</a></li>
+        <li><a [style.color]="inViewId == 'communication-and-updates' ? '#1bafff' : '#dad9d5'" href="/privacy-policy#communication-and-updates">&bull;&nbsp; Communication and Updates</a></li>
+    </ul>
+
+    <div class="content">
+        <section #firstCategory>
+            <div id="collect-and-use" class="paragraphs border-style box-shadow">
+                <h2>Collection And Use</h2>
+                <p>Finalyzing collects information when a user registers. This information, provided during registration, allows us to personally identify you. Finalyzing collects information during financial transactions you have with us. Finalyzing collects information during your use of our services such as the pages visited, your IP address and information from finalyzing.com cookies. Finalyzing uses data about its users to improve our services, marketing and statistics.</p>
+                <p>Finalyzing may use cookies to facilitate the use of our services. These cookies are not shared with any third parties such as advertisers or other companies.</p>
+            </div>
+
+            <div id="sharing" class="paragraphs border-style box-shadow">
+                <h2>Sharing Personal Information</h2>
+                <p>Finalyzing may disclose a user's personal information in connection with a legal proceeding or order (including court orders), subpoena and to protect our legal rights. We reserve the right to share your information where necessary to investigate illegal activities, prevent suspected fraud, ensure the physical safety of individuals, respond to violations of our terms of use, or in compliance with the legal requirements in force.</p>
+                <p>Finalyzing will not rent, sell or share your personal information with unaffiliated third parties unless strictly necessary to provide you with the products or services you have requested, you have given your explicit consent, or in specific situations provided for by law. we control our employees' access to our customers' personal data. Additionally, we provide information only to trusted organizations that do not have the right to share this information independently under confidentiality agreements. </p>
+                <p>If Finalyzing were to be acquired or merged with another company, your personal information may be transferred. However, we will notify you in advance of any such event, and your data would then be governed by a separate privacy policy, if applicable.</p>
+            </div>
+
+            <div id="communication-and-updates" class="paragraphs border-style box-shadow">
+                <h2>Communication and Updates</h2>
+                <p>We may send emails to our users without giving them the opportunity to opt out of receiving them. These emails will only concern important changes or events. At any time, we may make changes to this privacy policy. By continuing to use Finalyzing after we have published any modifications, you are indicating that you accept the updated conditions. We will inform you in advance by email of their update and/or by clearly displaying a notice on our site.</p>
+            </div>
+        </section>
+    </div>
+</div>
+
+<app-footer></app-footer>

@@ -1,0 +1,182 @@
+@import "../../styles.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba($surface-100, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 80%;
+  max-width: 400px;
+  padding: 30px;
+  text-align: center;
+  background-color: rgba($surface-000, 0.7) !important;
+}
+
+form header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+form h1 {
+  font-size: 2em;
+  font-weight: 900;
+}
+
+form h2 {
+  max-width: 100%;
+  font-size: 0.9em;
+  font-weight: lighter;
+}
+
+form h2.accept-tos {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+mat-label {
+  color: $text-200;
+}
+
+form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 21px 15px 7px 15px;
+  background-color: $text-100;
+  color: black;
+  font-size: 1em;
+}
+
+.input {
+  width: 100%;
+  position: relative;
+}
+
+.input input ~ label {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: black;
+  transition: transform .2s, font-size .2s;
+}
+
+.input input:focus ~ label,
+.input input:not(:placeholder-shown) ~ label {
+  font-size: .8em;
+  transform: translateY(-110%);
+}
+
+.password-errors {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.password-errors h4 {
+  width: fit-content;
+  background-color: $red-100;
+  color: $red-300;
+  padding: 2px 7px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+form .btn-wrapper {
+  display: grid;
+  grid-template-columns: .65fr;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+form button {
+  font-size: 1.1em;
+  transition: background .2s
+}
+
+form .btn-primary {
+  background-color: $primary-100;
+  color: $text-100;
+  padding: 8px 15px;
+  font-weight: bold;
+}
+
+form .btn-primary:hover {
+  background-color: $primary-200;
+}
+
+form .btn-primary:disabled {
+  background-color: unset;
+}
+
+form .btn-cancel {
+  color: $text-100;
+  padding: 8px 15px;
+}
+
+form .btn-cancel:hover {
+  background-color: $surface-300;
+}
+
+.error-message {
+  color: $red-100;
+}
+
+.login-link {
+  font-size: 0.9em;
+}
+
+.login-link a, .login-link button {
+  color: $blue-100;
+  text-decoration: none;
+}
+
+.separator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0;
+  color: $surface-500;
+  font-size: 1.3em;
+}
+
+.separator::before {
+  margin-right: 10px;
+}
+
+.separator::after {
+  margin-left: 10px;
+}
+
+.separator::before, .separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: $surface-500;
+}

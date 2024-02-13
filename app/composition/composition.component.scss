@@ -1,0 +1,38 @@
+@import "../../styles.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-grow: 1;
+  background: $surface-100;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border: 1px solid $neutral-100;
+  border-radius: 0 10px 10px 10px;
+  box-shadow: 0 5px 20px 5px rgba(10, 10, 10, 0.5);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 80%;
+  max-width: 1280px;
+  padding-bottom: 50px;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 50px 0 50px 0;
+  background-color: $surface-100;
+  border-bottom: 1px solid $neutral-100;
+}
+
+header h1 {
+  font-size: 2.2em;
+  font-weight: 900
+}

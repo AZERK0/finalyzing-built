@@ -1,0 +1,818 @@
+<div *ngIf="data['General']['Type']=='Common Stock'">
+  <div *ngIf="quoteComponent.selectTab=='general'" class="content">
+    <div class="header">
+      <div class="symbol">
+        <div class="icon" appTickerLogo [ticker]="ticker"></div>
+
+        <div class="name">
+          <h1>{{data['General']['Name']}}</h1>
+          <h3>{{ticker}} <span class="delisted" *ngIf="data['General']['IsDelisted']">Delisted</span></h3>
+        </div>
+      </div>
+
+      <div class="details">
+        <div>
+          <h3>Type</h3>
+          <h4 class="value light">{{data["General"]["Type"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Exchange</h3>
+          <h4 class="value light">{{data["General"]["Exchange"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Country</h3>
+          <h4 class="value light">{{data["General"]["CountryName"]}} <img [src]="'https://www.worldometers.info/img/flags/'+data['General']['CountryISO'].toLowerCase()+'-flag.gif'"
+                                                                          alt="Country Flag"
+                                                                          style="height: 10px"></h4>
+        </div>
+
+        <div>
+          <h3>Sector</h3>
+          <h4 class="value light">{{data['General']['Sector']}}</h4>
+        </div>
+
+        <div *ngIf="data['General']['WebURL']">
+          <h3>Website</h3>
+          <h4 class="value light"><a [href]='data["General"]["WebURL"]' target="_blank">{{getWebsite(data["General"]["WebURL"])}} <i
+            class="fa-solid fa-arrow-up-right-from-square"></i></a></h4>
+        </div>
+
+        <div>
+          <h3>Employees</h3>
+          <h4 class="value light">{{quoteComponent.intlFormatObjs['decimal'].format(data["General"]["FullTimeEmployees"])}} <i
+            class="fa-solid fa-user"></i></h4>
+        </div>
+
+        <div>
+          <h3>IPO Date</h3>
+          <h4 class="value light">{{data["General"]["IPODate"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Industry</h3>
+          <h4 class="value light">{{data["General"]["GicGroup"]}}</h4>
+        </div>
+      </div>
+
+      <div *ngIf="data['General']['Description']" [ngStyle]="{'max-height':showFullDesc ? '100%' : '200px' }" class="description">
+        <h2>Description</h2>
+        <div *ngIf="data['General']['Description'].length > 800 && !showFullDesc" class="mask"></div>
+        <i *ngIf="data['General']['Description'].length > 800" (click)="showFullDesc = !showFullDesc"
+           [ngClass]="{'fa-solid': true, 'fa-chevron-down': !showFullDesc, 'fa-chevron-up': showFullDesc}"></i>
+        <p>
+          {{data['General']['Description']}}
+        </p>
+      </div>
+    </div>
+
+    <div *ngIf="data['AnalystRatings']" class="financial-metrics">
+      <h2>Financial Metrics</h2>
+
+      <div class="wrapper" [style.filter]="app.isLoggedIn && app.user['premium'] ? 'blur(0)': 'blur(7px)'">
+        <div>
+          <h3>Analyst Rating</h3>
+          <div class="rating">
+            <div class="gauge border-style">
+              <div style="background-color: #E74C3C;" #gaugeStep></div>
+              <div style="background-color: #F39C12;"></div>
+              <div style="background-color: #F1C40F;"></div>
+              <div style="background-color: #27AE60;"></div>
+              <div style="background-color: #0e6512;"></div>
+            </div>
+            <i [style.margin-left]="(data['AnalystRatings']['Rating'] - 1) / 4 * 5 * gaugeStep.offsetWidth + 'px'"
+               class="fa-solid fa-chevron-up">
+            </i>
+          </div>
+        </div>
+
+        <div>
+          <h3>Analyst Target Price</h3>
+          <div class="target-price">
+            <h1>{{quoteComponent.intlFormatObjs['currency'].format(data['AnalystRatings']['TargetPrice'])}}</h1>
+            <h2 class="value" [ngClass]="{'pos': quoteComponent.technicalData['historical'].slice(-1)[0]['c'] - data['AnalystRatings']['TargetPrice'] < 0, 'neg': quoteComponent.technicalData['historical'].slice(-1)[0]['c'] - data['AnalystRatings']['TargetPrice'] > 0}">
+              {{quoteComponent.intlFormatObjs['decimal'].format(data['AnalystRatings']['TargetPrice'] - quoteComponent.technicalData['historical'].slice(-1)[0]['c'])}}
+              ({{quoteComponent.intlFormatObjs['percent'].format((data['AnalystRatings']['TargetPrice'] - quoteComponent.technicalData['historical'].slice(-1)[0]['c']) / quoteComponent.technicalData['historical'].slice(-1)[0]['c'])}})
+            </h2>
+          </div>
+        </div>
+
+        <div>
+          <h3>Short Interest %</h3>
+          <h4 class="value light">{{quoteComponent.intlFormatObjs['percent'].format(data["Technicals"]["ShortPercent"])}}</h4>
+        </div>
+      </div>
+
+      <div *ngIf="!app.isLoggedIn || !app.user['premium']" class="premium-feature">
+        <h2 class="text-shadow">Premium Feature</h2>
+        <button (click)="showPremiumPopup=true" class="box-shadow">Learn More</button>
+      </div>
+    </div>
+
+    <div class="values">
+      <div>
+        <h2>Valuation Measures</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Category</th>
+              <th>Values</th>
+            </tr>
+            <tr>
+              <td>Market Cap</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['SharesStats']['SharesOutstanding'] * quoteComponent.technicalData['historical'].slice(-1)[0]['c'])}}</td>
+            </tr>
+            <tr>
+              <td>Revenue (TTM)</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['RevenueTTM'])}}</td>
+            </tr>
+            <tr>
+              <td>PER</td>
+              <td>{{quoteComponent.intlFormatObjs['decimal'].format(data['Highlights']['PERatio'])}}</td>
+            </tr>
+            <tr>
+              <td>PEG</td>
+              <td>{{quoteComponent.intlFormatObjs['decimal'].format(data['Highlights']['PEGRatio'])}}</td>
+            </tr>
+            <tr>
+              <td>Dividend Share</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['DividendShare'])}}</td>
+            </tr>
+            <tr>
+              <td>Dividend Yield</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['Highlights']['DividendYield'])}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h2>Profitability and Performance Measures</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Category</th>
+              <th>Values</th>
+            </tr>
+            <tr>
+              <td>Diluted EPS (TTM)</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['DilutedEpsTTM'])}}</td>
+            </tr>
+            <tr>
+              <td>EPS Estimate (Current/Next Quarter)</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['EPSEstimateCurrentQuarter'])}}
+                / {{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['EPSEstimateNextQuarter'])}}</td>
+            </tr>
+            <tr>
+              <td>EPS Estimate (Current/Next Year)</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['EPSEstimateCurrentYear'])}}
+                / {{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['EPSEstimateNextYear'])}}</td>
+            </tr>
+            <tr>
+              <td>Earnings Share</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['EarningsShare'])}}</td>
+            </tr>
+            <tr>
+              <td>Revenue per Share (TTM)</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['RevenuePerShareTTM'])}}</td>
+            </tr>
+            <tr>
+              <td>Profit Margin</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['Highlights']['ProfitMargin'])}}</td>
+            </tr>
+            <tr>
+              <td>Operating Margin (TTM)</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['Highlights']['OperatingMarginTTM'])}}</td>
+            </tr>
+            <tr>
+              <td>Gross Profit (TTM)</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['GrossProfitTTM'])}}</td>
+            </tr>
+            <tr>
+              <td>EBITDA</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['Highlights']['EBITDA'])}}</td>
+            </tr>
+            <tr>
+              <td>Return on Assets (TTM)</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['Highlights']['ReturnOnAssetsTTM'])}}</td>
+            </tr>
+            <tr>
+              <td>Return on Equity (Yearly)</td>
+              <td>{{ ROE() !== null ? quoteComponent.intlFormatObjs['percent'].format(ROE()) : 'missing value(s)' }}</td>
+            </tr>
+            <tr>
+              <td>Quarterly Earnings Growth (YoY)</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['Highlights']['QuarterlyEarningsGrowthYOY'])}}</td>
+            </tr>
+            <tr>
+              <td>Quarterly Revenue Growth (YoY)</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['Highlights']['QuarterlyRevenueGrowthYOY'])}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="data['Holders']" class="holders">
+      <h2>Top 5 Holders</h2>
+      <div>
+        <h3 class="funds">Funds</h3>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Name</th>
+              <th>Stake</th>
+              <th>Shares Owned</th>
+              <th>Value</th>
+              <th>Change</th>
+            </tr>
+            <tr *ngFor="let fund of data['Holders']['Funds'].slice(0, 5)">
+              <td>{{fund['name']}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(fund['totalShares'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['decimal'].format(fund['currentShares'])}}</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(fund['currentShares'] * quoteComponent.technicalData['historical'].slice(-1)[0]['c'])}}</td>
+              <td
+                [ngStyle]="{'color': getColor(fund['change'])}">{{quoteComponent.intlFormatObjs['decimal'].format(fund['change'])}}
+                ({{quoteComponent.intlFormatObjs['percent'].format(fund['change_p'] / 100)}})
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="institutions">
+          <h3>Institutions</h3>
+          <h4 class="value light">{{quoteComponent.intlFormatObjs['percent'].format(data["SharesStats"]["PercentInstitutions"] / 100)}}</h4>
+        </div>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Name</th>
+              <th>Stake</th>
+              <th>Shares Owned</th>
+              <th>Value</th>
+              <th>Change</th>
+            </tr>
+            <tr *ngFor="let institution of data['Holders']['Institutions'].slice(0, 5)">
+              <td>{{institution['name']}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(institution['totalShares'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['decimal'].format(institution['currentShares'])}}</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(institution['currentShares'] * quoteComponent.technicalData['historical'].slice(-1)[0]['c'])}}</td>
+              <td
+                [ngStyle]="{'color': getColor(institution['change'])}">{{quoteComponent.intlFormatObjs['decimal'].format(institution['change'])}}
+                ({{quoteComponent.intlFormatObjs['percent'].format(institution['change_p'] / 100)}})
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="data['General']['Type']=='ETF'">
+  <div *ngIf="quoteComponent.selectTab=='general'" class="content">
+    <div class="header">
+      <div class="symbol">
+        <div class="icon" appTickerLogo [ticker]="ticker"></div>
+
+        <div class="name">
+          <h1>{{data['General']['Name']}}</h1>
+          <h3>{{ticker}}</h3>
+        </div>
+      </div>
+
+      <div class="details">
+        <div>
+          <h3>Type</h3>
+          <h4 class="value light">{{data["General"]["Type"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Exchange</h3>
+          <h4 class="value light">{{data["General"]["Exchange"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Country</h3>
+          <h4 class="value light">{{data["General"]["CountryName"]}} <img [src]="'https://www.worldometers.info/img/flags/'+data['General']['CountryISO'].toLowerCase()+'-flag.gif'"
+                                                                          alt="Country Flag"
+                                                                          style="height: 10px"></h4>
+        </div>
+
+        <div>
+          <h3>Website</h3>
+          <h4 class="value light"><a [href]='data["ETF_Data"]["ETF_URL"]' target="_blank">{{getWebsite(data["ETF_Data"]["ETF_URL"])}} <i
+            class="fa-solid fa-arrow-up-right-from-square"></i></a></h4>
+        </div>
+
+        <div>
+          <h3>Number of stocks</h3>
+          <h4 class="value light">{{quoteComponent.intlFormatObjs['decimal'].format(data['ETF_Data']['Holdings_Count'])}}</h4>
+        </div>
+
+        <div>
+          <h3>Inception date</h3>
+          <h4 class="value light">{{data["ETF_Data"]["Inception_Date"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Dividend paying frequency</h3>
+          <h4 class="value light">{{data["ETF_Data"]["Dividend_Paying_Frequency"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Morningstar rating</h3>
+          <h4 class="value light">{{data["ETF_Data"]["MorningStar"]["Ratio"]}}</h4>
+        </div>
+
+      </div>
+
+      <div [ngStyle]="{'max-height':showFullDesc ? '100%' : '200px' }" class="description">
+        <h2 *ngIf="data['General']['Description']">Description</h2>
+        <div *ngIf="data['General']['Description'] && data['General']['Description'].length > 800 && !showFullDesc" class="mask"></div>
+        <i  *ngIf="data['General']['Description'] && data['General']['Description'].length > 800" (click)="showFullDesc = !showFullDesc"
+            [ngClass]="{'fa-solid': true, 'fa-chevron-down': !showFullDesc, 'fa-chevron-up': showFullDesc}"></i>
+        <p>
+          {{data['General']['Description']}}
+        </p>
+      </div>
+    </div>
+
+    <div class="values">
+      <div>
+        <h2>Valuation</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Category</th>
+              <th>Values</th>
+            </tr>
+
+            <tr>
+              <td>Total assets</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['ETF_Data']['TotalAssets'])}}</td>
+            </tr>
+
+            <tr>
+              <td>Average market cap</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['ETF_Data']['Average_Mkt_Cap_Mil'] * 1000000)}}</td>
+            </tr>
+
+            <tr>
+              <td>Yield</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Yield'] / 100)}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="Object.values(data['ETF_Data']['Performance'])[0] != null">
+        <h2>Performance</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Category</th>
+              <th>Values</th>
+            </tr>
+            <tr>
+              <td>1 year volatility</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Performance']['1y_Volatility'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>3 year volatility</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Performance']['3y_Volatility'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>YTD returns</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Performance']['Returns_YTD'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>1 year returns</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Performance']['Returns_1Y'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>3 year returns</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Performance']['Returns_3Y'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>5 year returns</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Performance']['Returns_5Y'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>10 year returns</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Performance']['Returns_10Y'] / 100)}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="Object.keys(data['ETF_Data']['Market_Capitalisation']).length > 0">
+        <h2>Composition</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Category</th>
+              <th>Values</th>
+            </tr>
+            <tr>
+              <td>Mega cap (% of fund)</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Market_Capitalisation']['Mega'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>Big cap (% of fund)</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Market_Capitalisation']['Big'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>Medium cap (% of fund)</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Market_Capitalisation']['Medium'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>Small cap (% of fund)</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Market_Capitalisation']['Small'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>Micro cap (% of fund)</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Market_Capitalisation']['Micro'] / 100)}}</td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="Object.keys(data['ETF_Data']['Asset_Allocation']).length > 0">
+        <h2>Asset allocation</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Asset</th>
+              <th>Long</th>
+              <th>Short</th>
+              <th>Net</th>
+            </tr>
+
+            <tr>
+              <td>Cash</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Cash']['Long_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Cash']['Short_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Cash']['Net_Assets_%'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>US stock</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Stock US']['Long_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Stock US']['Short_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Stock US']['Net_Assets_%'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>non-US Stock</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Stock non-US']['Long_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Stock non-US']['Short_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Stock non-US']['Net_Assets_%'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>Bond</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Bond']['Long_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Bond']['Short_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Bond']['Net_Assets_%'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>NotClassified</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['NotClassified']['Long_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['NotClassified']['Short_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['NotClassified']['Net_Assets_%'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>Other</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Other']['Long_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Other']['Short_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['ETF_Data']['Asset_Allocation']['Other']['Net_Assets_%'] / 100)}}</td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="Object.keys(data['ETF_Data']['Sector_Weights']).length > 0">
+        <h2>Sector weights</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Sector</th>
+              <th>% of fund</th>
+
+            </tr>
+            <tr *ngFor="let item of data['ETF_Data']['Sector_Weights'] | keyvalue">
+              <td>{{$any(item).key}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format($any(item).value['Equity_%'] / 100)}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="Object.keys(data['ETF_Data']['World_Regions']).length > 0">
+        <h2>World regions</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Sector</th>
+              <th>% of fund</th>
+
+            </tr>
+            <tr *ngFor="let item of data['ETF_Data']['World_Regions'] | keyvalue">
+              <td>{{$any(item).key}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format($any(item).value['Equity_%'] / 100)}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="Object.keys(data['ETF_Data']['Top_10_Holdings']).length > 0" class="holders">
+      <h2>Top 10 holding</h2>
+      <div>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Name (ticker)</th>
+              <th>Sector, industry</th>
+              <th>Country, region</th>
+              <th>% of fund</th>
+
+            </tr>
+            <tr *ngFor="let item of data['ETF_Data']['Top_10_Holdings'] | keyvalue">
+              <td>{{$any(item).value["Name"]}} ({{$any(item).value["Code"]}})</td>
+              <td>{{$any(item).value["Sector"]}}, {{$any(item).value["Industry"]}}</td>
+              <td>{{$any(item).value["Country"]}}, {{$any(item).value["Region"]}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format($any(item).value['Assets_%'] / 100)}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="data['General']['Type']=='FUND'">
+  <div *ngIf="quoteComponent.selectTab=='general'" class="content">
+    <div class="header">
+      <div class="symbol">
+        <div class="icon" appTickerLogo [ticker]="ticker"></div>
+
+        <div class="name">
+          <h1>{{data['General']['Name']}}</h1>
+          <h3>{{ticker}}</h3>
+        </div>
+      </div>
+
+      <div class="details">
+        <div>
+          <h3>Type</h3>
+          <h4 class="value light">{{data["General"]["Type"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Exchange</h3>
+          <h4 class="value light">{{data["General"]["Exchange"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Country</h3>
+          <h4 class="value light">{{data["General"]["CountryName"]}} <img [src]="'https://www.worldometers.info/img/flags/'+data['General']['CountryISO'].toLowerCase()+'-flag.gif'"
+                                                                          alt="Country Flag"
+                                                                          style="height: 10px"></h4>
+        </div>
+
+        <div>
+          <h3>Category</h3>
+          <h4 class="value light">{{data["General"]["Fund_Category"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Family</h3>
+          <h4 class="value light">{{data["General"]["Fund_Family"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Style</h3>
+          <h4 class="value light">{{data["General"]["Fund_Style"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Inception date</h3>
+          <h4 class="value light">{{data["MutualFund_Data"]["Inception_Date"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Fiscal year-end</h3>
+          <h4 class="value light">{{data["General"]["Fiscal_Year_End"]}}</h4>
+        </div>
+
+      </div>
+
+      <div *ngIf="data['General']['Fund_Summary']" [ngStyle]="{'max-height':showFullDesc ? '100%' : '200px' }" class="description">
+        <h2>Summary</h2>
+        <div *ngIf="data['General']['Fund_Summary'].length > 800 && !showFullDesc" class="mask"></div>
+        <i  *ngIf="data['General']['Fund_Summary'].length > 800" (click)="showFullDesc = !showFullDesc"
+            [ngClass]="{'fa-solid': true, 'fa-chevron-down': !showFullDesc, 'fa-chevron-up': showFullDesc}"></i>
+        <p>
+          {{data['General']['Fund_Summary']}}
+        </p>
+      </div>
+    </div>
+
+    <div class="values">
+      <div>
+        <h2>Valuation</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Category</th>
+              <th>Values</th>
+            </tr>
+
+            <tr>
+              <td>Portfolio net assets</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['MutualFund_Data']['Portfolio_Net_Assets'])}}</td>
+            </tr>
+
+            <tr>
+              <td>Share class net assets</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data['MutualFund_Data']['Share_Class_Net_Assets'])}}</td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h2>Performance</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Category</th>
+              <th>Values</th>
+            </tr>
+
+            <tr>
+              <td>1 year (YTD) returns</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['MutualFund_Data']['Yield_1Year_YTD'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>3 year (YTD) returns</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['MutualFund_Data']['Yield_3Year_YTD'] / 100)}}</td>
+            </tr>
+
+            <tr>
+              <td>5 year (YTD) returns</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data['MutualFund_Data']['Yield_5Year_YTD'] / 100)}}</td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h2>Asset allocation</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Asset</th>
+              <th>Long</th>
+              <th>Short</th>
+              <th>Net</th>
+            </tr>
+
+            <tr *ngFor="let item of data['MutualFund_Data']['Asset_Allocation'] | keyvalue">
+              <td>{{$any(item).value["Type"]}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format($any(item).value['Long_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format($any(item).value['Short_%'] / 100)}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format($any(item).value['Net_%'] / 100)}}</td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="Object.keys(data['MutualFund_Data']['Top_Countries']).length > 1">
+        <h2>Countries</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Country</th>
+              <th>% of fund</th>
+
+            </tr>
+            <tr *ngFor="let item of data['MutualFund_Data']['Top_Countries'] | keyvalue">
+              <td>{{$any(item).value["Country"]}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format($any(item).value['Amount_%'] / 100)}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="holders">
+      <h2>Top holding</h2>
+      <div>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Name (ticker)</th>
+              <th>Weight</th>
+              <th>Owned</th>
+              <th>Change</th>
+
+            </tr>
+            <tr *ngFor="let item of data['MutualFund_Data']['Top_Holdings'] | keyvalue">
+              <td>{{$any(item).value["Name"]}}</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format($any(item).value['Weight'] / 100)}}</td>
+              <td>{{$any(item).value['Owned']}}</td>
+              <td>{{$any(item).value['Change']}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="data['General']['Type']=='Crypto'">
+  <div *ngIf="quoteComponent.selectTab=='general'" class="content">
+    <div class="header">
+      <div class="symbol">
+        <div class="icon" appTickerLogo [ticker]="ticker"></div>
+
+        <div class="name">
+          <h1>{{data['General']['Name']}}</h1>
+          <h3>{{ticker}}</h3>
+        </div>
+      </div>
+
+      <div class="details">
+        <div>
+          <h3>Type</h3>
+          <h4 class="value light">{{data["General"]["Type"]}}</h4>
+        </div>
+
+        <div>
+          <h3>Website</h3>
+          <h4 class="value light"><a [href]='data["General"]["WebURL"]' target="_blank">{{getWebsite(data["General"]["WebURL"])}} <i
+            class="fa-solid fa-arrow-up-right-from-square"></i></a></h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="values" style="border: none">
+      <div>
+        <h2>Statistics</h2>
+        <div class="table-wrapper">
+          <table class="table border-style box-shadow">
+            <tr>
+              <th>Category</th>
+              <th>Values</th>
+            </tr>
+            <tr>
+              <td>Circulating supply</td>
+              <td>{{quoteComponent.intlFormatObjs['decimal'].format(data["Statistics"]["CirculatingSupply"])}}</td>
+            </tr>
+            <tr>
+              <td>Maximum supply</td>
+              <td>{{quoteComponent.intlFormatObjs['decimal'].format(data["Statistics"]["MaxSupply"])}}</td>
+            </tr>
+            <tr>
+              <td>Market cap</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data["Statistics"]["MarketCapitalization"])}}</td>
+            </tr>
+            <tr>
+              <td>Market cap diluted</td>
+              <td>{{quoteComponent.intlFormatObjs['currency'].format(data["Statistics"]["MarketCapitalizationDiluted"])}}</td>
+            </tr>
+            <tr>
+              <td>Dominance</td>
+              <td>{{quoteComponent.intlFormatObjs['percent'].format(data["Statistics"]["MarketCapDominance"] / 100)}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-premium-popup *ngIf="showPremiumPopup" src="financial-metrics" [host]="this"></app-premium-popup>

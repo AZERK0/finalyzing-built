@@ -1,0 +1,118 @@
+@import "../../styles.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  cursor: default;
+}
+
+h1, h2 {
+  font-weight: 800;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+h2 {
+  font-size: 1.8em;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+.title {
+  margin-top: 130px;
+  width: 90%;
+  max-width: 1400px;
+  text-align: center;
+}
+
+.sub-title {
+  width: 90%;
+  max-width: 1400px;
+  font-size: 1.1em;
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+  position: relative;
+  width: 90%;
+  max-width: 1400px;
+  padding-bottom: 50px;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: sticky;
+  top: 130px;
+  left: 0;
+  box-sizing: border-box;
+  padding: 20px 40px 20px 20px;
+  background: $surface-200;
+  list-style-type: none;
+}
+
+ul h2 {
+  margin-bottom: 20px;
+}
+
+ul a {
+  font-size: 1.15em;
+  text-decoration: none;
+  transition: color .2s;
+}
+
+ul a:hover {
+  color: white;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  flex-grow: 1;
+  width: 0;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+section div {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: $surface-200;
+}
+
+section div p {
+  font-size: 1.1em;
+}
+
+@media screen and (max-width: 580px) {
+  .container {
+    flex-direction: column;
+  }
+
+  ul {
+    position: static;
+    margin-top: 0 !important;
+  }
+
+  .content {
+    flex-grow: 0;
+    width: auto;
+  }
+}

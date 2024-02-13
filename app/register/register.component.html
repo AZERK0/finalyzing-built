@@ -1,0 +1,102 @@
+<form *ngIf="registerPanel === 1" (ngSubmit)="register()" class="glass-morphism border-style">
+  <header>
+    <h1>Sign Up</h1>
+    <button type="button" *ngIf="app.loginCancelable" (click)="app.toggleRegisterDialog()" class="close"><i class="fa-solid fa-xmark fa-lg"></i></button>
+  </header>
+  <div class="input">
+    <input type="email" id="email" name="email" class="border-style" placeholder=" " maxlength="100" [(ngModel)]="email" (input)="checkEmail()" autocomplete required>
+    <label for="email">Email</label>
+  </div>
+  <p *ngIf="!registrationConditions['isEmailValid']" class="error-message">Email format is not valid.</p>
+  <div class="input">
+    <input type="text" id="username" name="username" minlength="3" maxlength="25" class="border-style" placeholder=" " [(ngModel)]="username" (input)="checkUsername(); checkPassword()" autocomplete required>
+    <label for="username">Username</label>
+  </div>
+  <p *ngIf="!registrationConditions['usernameAvailable']" class="error-message">Not available</p>
+  <div class="input">
+    <input type="password" id="password" name="password" minlength="8" maxlength="100" class="border-style" placeholder=" " [(ngModel)]="password" (input)="checkPassword(); checkPasswordConfirmation()" autocomplete required>
+    <label for="password">Password</label>
+  </div>
+  <div class="password-errors" *ngIf="!registrationConditions.minLength || !registrationConditions.hasSpecialChar || !registrationConditions.hasUpperCase || !registrationConditions.hasLowerCase || !registrationConditions.hasDigit">
+    <h4 class="border-style" *ngIf="!registrationConditions.minLength">8+ length</h4>
+    <h4 class="border-style" *ngIf="!registrationConditions.hasSpecialChar">Special char</h4>
+    <h4 class="border-style" *ngIf="!registrationConditions.hasUpperCase">Uppercase</h4>
+    <h4 class="border-style" *ngIf="!registrationConditions.hasLowerCase">Lowercase</h4>
+    <h4 class="border-style" *ngIf="!registrationConditions.hasDigit">Digit</h4>
+  </div>
+  <div class="input">
+    <input type="password" id="verifPassword" name="verifPassword" minlength="8" maxlength="100" class="border-style" placeholder=" " [(ngModel)]="confirmPassword" (input)="checkPasswordConfirmation()" autocomplete required>
+    <label for="verifPassword">Confirm Password</label>
+  </div>
+  <p *ngIf="!registrationConditions['isPasswordConfirmed']" class="error-message">Passwords do not match.</p>
+  <p *ngIf="error" class="error-message">{{error}}</p>
+  <h2 class="accept-tos"><input type="checkbox" [checked]="TOSandPP" (change)="TOSandPP = !TOSandPP" required>Accept <a [href]="'/terms-of-use'">Terms Of Use</a> and <a [href]="'/privacy-policy'">Privacy Policy</a></h2>
+  <div class="btn-wrapper">
+    <button type="submit" class="btn-primary border-style" [disabled]="!isRegisterable">Create Account</button>
+  </div>
+  <p class="login-link">Already have an account ? <button type="button" (click)="app.toggleRegisterDialog(); app.toggleLoginDialog()">Sign In</button></p>
+  <div class="separator">or</div>
+  <div id="g-login"></div>
+</form>
+
+<form *ngIf="registerPanel === 2" (ngSubmit)="app.toggleRegisterDialog(); app.toggleLoginDialog()" class="glass-morphism border-style">
+  <header>
+    <h1>Account Verification Email Sent</h1>
+    <button type="button" *ngIf="app.loginCancelable" (click)="app.toggleLoginDialog()" class="close"><i class="fa-solid fa-xmark fa-lg"></i></button>
+  </header>
+  <i class="fa-solid fa-envelope-circle-check" style="font-size: 2.5em"></i>
+  <h2>The verification email has been sent to <strong>{{email}}</strong><br>Link valid for 24 hours</h2>
+  <div class="btn-wrapper">
+    <button type="submit" class="btn-primary border-style">Login</button>
+  </div>
+</form>
+
+<form *ngIf="registerPanel === 3" (ngSubmit)="app.toggleRegisterDialog(); app.toggleLoginDialog()" class="glass-morphism border-style">
+  <header>
+    <h1>Account successfully verified</h1>
+  </header>
+  <i class="fa-solid fa-circle-check" style="font-size: 2.5em"></i>
+  <h2>Welcome to Finalyzing<br>Thank you for creating your account.</h2>
+  <div class="btn-wrapper">
+    <button type="submit" class="btn-primary border-style">Login</button>
+  </div>
+</form>
+
+<form *ngIf="registerPanel === 4" (ngSubmit)="resetPassword()" class="glass-morphism border-style">
+  <header>
+    <h1>Reset Password</h1>
+    <button type="button" *ngIf="app.loginCancelable" (click)="app.toggleLoginDialog()" class="close"><i class="fa-solid fa-xmark fa-lg"></i></button>
+  </header>
+  <div class="input">
+    <input type="password" id="resetPassword" name="password" minlength="8" maxlength="100" class="border-style" placeholder=" " [(ngModel)]="password" (input)="checkPassword(); checkPasswordConfirmation()" autocomplete required>
+    <label for="resetPassword">Password</label>
+  </div>
+  <div class="password-errors" *ngIf="!registrationConditions.minLength || !registrationConditions.hasSpecialChar || !registrationConditions.hasUpperCase || !registrationConditions.hasLowerCase || !registrationConditions.hasDigit">
+    <h4 class="border-style" *ngIf="!registrationConditions.minLength">8+ length</h4>
+    <h4 class="border-style" *ngIf="!registrationConditions.hasSpecialChar">Special char</h4>
+    <h4 class="border-style" *ngIf="!registrationConditions.hasUpperCase">Uppercase</h4>
+    <h4 class="border-style" *ngIf="!registrationConditions.hasLowerCase">Lowercase</h4>
+    <h4 class="border-style" *ngIf="!registrationConditions.hasDigit">Digit</h4>
+  </div>
+  <div class="input">
+    <input type="password" id="resetVerifPassword" name="resetVerifPassword" minlength="8" maxlength="100" class="border-style" placeholder=" " [(ngModel)]="confirmPassword" (input)="checkPasswordConfirmation()" autocomplete required>
+    <label for="resetVerifPassword">Confirm Password</label>
+  </div>
+  <p *ngIf="!registrationConditions['isPasswordConfirmed']" class="error-message">Passwords do not match.</p>
+  <p *ngIf="error" class="error-message">{{error}}</p>
+  <div class="btn-wrapper">
+    <button type="submit" class="btn-primary border-style" [disabled]="!registrationConditions.minLength || !registrationConditions.hasSpecialChar || !registrationConditions.hasUpperCase || !registrationConditions.hasLowerCase || !registrationConditions.hasDigit || !registrationConditions.isPasswordConfirmed">Change Password</button>
+  </div>
+</form>
+
+<form *ngIf="registerPanel === 5" (ngSubmit)="app.toggleRegisterDialog()" class="glass-morphism border-style">
+  <header>
+    <h1>Payment successful</h1>
+    <button type="button" (click)="app.toggleRegisterDialog()" class="close"><i class="fa-solid fa-xmark fa-lg"></i></button>
+  </header>
+  <i class="fa-solid fa-circle-dollar-to-slot" style="font-size: 2.5em"></i>
+  <h2>Welcome to Finalyzing One<br>Thanks for your purchase !</h2>
+  <div class="btn-wrapper">
+    <button type="submit" class="btn-primary border-style">Continue</button>
+  </div>
+</form>

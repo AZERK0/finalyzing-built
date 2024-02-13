@@ -1,0 +1,353 @@
+@import "../../styles.scss";
+
+:host {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+}
+
+header {
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  margin: 20px 20px 0 20px;
+  padding: 0 30px;
+  box-sizing: border-box;
+  user-select: none;
+  position: relative
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.center-section {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.h-separator {
+  height: 2px;
+  width: 100%;
+  background-color: $neutral-100
+}
+
+.v-separator {
+  height: 30px;
+  width: 2px;
+  background-color: $neutral-100
+}
+
+.burger-menu {
+  display: none;
+  cursor: pointer;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+img {
+  height: 25px;
+  width: auto;
+  cursor: pointer;
+}
+
+.navbar {
+  display: flex;
+  gap: 10px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+}
+
+.dropdown {
+  position: relative;
+
+}
+
+.dropdown .trigger {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.dropdown ul {
+  display: none;
+  flex-direction: column-reverse;
+  justify-content: center;
+  gap: 10px;
+  list-style-type: none;
+  font-size: 15px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  max-width: 400px;
+  margin-top: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  background: $surface-200;
+  overflow-x: auto;
+  transform-origin: top right;
+}
+
+.dropdown:hover ul {
+  display: flex;
+}
+
+.dropdown ul a {
+  width: 100%;
+}
+
+li {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+li a, li button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  text-decoration: none;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: background-color 0.2s;
+}
+
+li a:hover, li button:hover, .dropdown:hover > a {
+  border: 1px solid $neutral-100;
+  background-color: $surface-300;
+}
+
+.left-section .search-box {
+  display: none;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+}
+
+.search-box input {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+  max-width: 40vw;
+  padding: 5px 50px;
+  background-color: $text-100;
+  color: black;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.search-box button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
+  background-color: $primary-100;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+
+.search-box button i {
+  font-size: 12px;
+}
+
+.user-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 1px solid $neutral-100;
+  background-color: $surface-300;
+  transition: background-color .2s;
+}
+
+button.user-icon:hover {
+  background-color: $surface-400;
+}
+
+.user-icon i {
+  color: $text-200;
+  font-size: 16px;
+}
+
+.user-menu {
+  flex-direction: column-reverse;
+  justify-content: center;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  max-width: 400px;
+  margin-top: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  background: $surface-200;
+  overflow-x: auto;
+  transform-origin: top right;
+}
+
+.user-menu ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+}
+
+.user-menu button, .user-menu a {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.user-menu .sign-in-btn {
+  color: $blue-100;
+  border: 1px solid transparent;
+}
+
+.user-menu .sign-in-btn:hover {
+  border: 1px solid $blue-100;
+  background-color: $blue-300 !important
+}
+
+.view-profile-btn {
+  justify-content: flex-start !important;
+  gap: 5px;
+}
+
+.view-profile-btn .text {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-weight: 900;
+}
+
+.view-profile-btn p {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.user-menu .logout-btn {
+  color: $red-100;
+  border: 1px solid transparent;
+}
+
+.user-menu .logout-btn:hover {
+  border: 1px solid $red-100;
+  background-color: $red-300 !important
+}
+
+@keyframes slideIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .left-section .search-box {
+    display: flex;
+  }
+
+  .center-section .search-box {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  header {
+    height: 50px;
+  }
+
+  img {
+    height: 20px;
+  }
+
+  .center-section .v-separator {
+    display: none;
+  }
+
+  .center-section {
+    position: static;
+    transform: none;
+  }
+
+  .navbar {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    max-width: 400px;
+    margin-top: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+    background: $surface-200;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 5px 20px 5px rgba(10, 10, 10, 0.5);
+    transform-origin: top center;
+    animation: slideIn 0.4s ease-in-out;
+  }
+
+  .dropdown .trigger {
+    display: none;
+  }
+
+  .navbar ul {
+    z-index: 2;
+  }
+
+  .navbar li {
+    flex-grow: 1;
+  }
+
+  .burger-menu {
+    display: block;
+  }
+}
+
+@media screen and (min-width: 901px) {
+  .navbar {
+    display: flex !important;
+  }
+}

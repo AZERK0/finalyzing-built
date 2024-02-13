@@ -1,0 +1,120 @@
+<app-header></app-header>
+
+<div class="content">
+  <div class="plan">
+    <h1 class="title">Invest in your financial future<br> Premium subscription, powerful tools</h1>
+
+    <div class="periods box-shadow">
+      <i class="fa-solid fa-arrow-turn-up"></i>
+      <button (click)="period = 'y'" [ngClass]="{'selected': period == 'y'}">Yearly</button>
+      <button (click)="period = 'm'" [ngClass]="{'selected': period == 'm'}">Monthly</button>
+    </div>
+
+    <p class="yearly-advantage">
+      Get 3 months free (-25%) annually with the yearly plan and get a bonus 1-month free trial.
+    </p>
+
+    <form class="subscription border-style box-shadow glass-morphism" (ngSubmit)="createCheckoutSession(lookupKey.value)">
+      <h1>Finalyzing One</h1>
+      <div class="price-wrapper">
+        <div class="price"><h1>{{period == 'm' ? '14.99' : '134.99'}}$</h1> <p>/{{period == 'm' ? 'month' : 'year'}}</p> <s>{{period == 'm' ? '' : '179.88/year'}}</s></div>
+        <div *ngIf="period == 'y'" class="price" style="font-size: 0.8em"><h1>11.25$</h1> <p>/month</p> <s>{{'14.99/month'}}</s></div>
+      </div>
+
+      <input #lookupKey type="hidden" name="lookup_key" [value]="period == 'm' ? 'one_monthly' : 'one_yearly'" />
+      <button *ngIf="!app.isLoggedIn" (click)="app.toggleLoginDialog()" type="button">{{period == 'm' ? '14 Days' : '1 Month'}} Free Trial</button>
+      <button *ngIf="app.isLoggedIn && (!app.user['trial_status'] && !app.user['premium'])">{{period == 'm' ? '14 Days' : '1 Month'}} Free Trial</button>
+      <button *ngIf="app.isLoggedIn && !app.user['premium'] && app.user['trial_status']" type="submit">Start Now</button>
+      <button *ngIf="app.isLoggedIn && app.user['premium']" (click)="createBillingPortalSession()" type="button">Manage Subscription</button>
+
+      <ul>
+        <li>Unlimited Portfolio Tracking</li>
+        <li>Unlimited Indicators Per Chart</li>
+        <li>Macroeconomic Indicators (38 Indicators over 215 Countries)</li>
+        <li>Historical Accounting Data and Ratios</li>
+        <li>Financial Metrics (Analyst Rating, Analyst Target Price, Short Interest)</li>
+        <li>Earning History Since Start</li>
+        <li>News and Tweets Sentiment Indicator</li>
+        <li>Unlimited Watchlist</li>
+        <li>Portfolio Distributions</li>
+      </ul>
+    </form>
+  </div>
+</div>
+
+<div class="content">
+  <div class="compare">
+    <table class="border-style box-shadow">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Free</th>
+        <th>Premium
+          <button *ngIf="!app.isLoggedIn" (click)="app.toggleLoginDialog()" type="button">Start Now</button>
+          <button *ngIf="app.isLoggedIn && (!app.user['trial_status'] && !app.user['premium'])">Start Now</button>
+          <button *ngIf="app.isLoggedIn && !app.user['premium'] && app.user['trial_status']" type="submit">Start Now</button>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Portfolio</td>
+        <td>1 portfolio & 5 positions max.</td>
+        <td>Unlimited</td>
+      </tr>
+      <tr>
+        <td>Technical Indicators</td>
+        <td>3 max.</td>
+        <td>Unlimited</td>
+      </tr>
+      <tr>
+        <td>Macroeconomic Indicators</td>
+        <td>✖</td>
+        <td><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#3e32e6" class="bi bi-check" viewBox="0 0 16 16">
+          <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+        </svg></td>
+      </tr>
+      <tr>
+        <td>Historical Accounting Data and Ratios</td>
+        <td>✖</td>
+        <td><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#3e32e6" class="bi bi-check" viewBox="0 0 16 16">
+          <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+        </svg></td>
+      </tr>
+      <tr>
+        <td>Financial Metrics</td>
+        <td>✖</td>
+        <td><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#3e32e6" class="bi bi-check" viewBox="0 0 16 16">
+          <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+        </svg></td>
+      </tr>
+      <tr>
+        <td>Earnings History</td>
+        <td>12 quarters</td>
+        <td>All quarters</td>
+      </tr>
+      <tr>
+        <td>News and Tweets Sentiment Indicator</td>
+        <td>✖</td>
+        <td><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#3e32e6" class="bi bi-check" viewBox="0 0 16 16">
+          <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+        </svg></td>
+      </tr>
+      <tr>
+        <td>Watchlist</td>
+        <td>3 max.</td>
+        <td>Unlimited</td>
+      </tr>
+      <tr>
+        <td>Portfolio Distributions</td>
+        <td>✖</td>
+        <td><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#3e32e6" class="bi bi-check" viewBox="0 0 16 16">
+          <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+        </svg></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<app-footer></app-footer>

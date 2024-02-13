@@ -1,0 +1,83 @@
+<form class="top box-shadow border-style">
+  <div class="search-box">
+    <input #searchbar (keydown.arrowDown)="arrowDownEvent(row, selectedRowIndex)" (keydown.arrowUp)="arrowUpEvent(row, selectedRowIndex)"
+           (keydown.enter)="submitSearch(searchbar.value)"
+           (focus)="selectedRowIndex=0" (focusout)="selectedRowIndex=undefined"
+           (ngModelChange)="searchUpdate.next($event)"
+           [formControl]="control"
+           id="search-bar" placeholder="Search..."
+           required type="search" class="border-style">
+    <button type="button" aria-label="Search" (click)='submitSearch(searchbar.value)'><i class="fa-solid fa-magnifying-glass"></i></button>
+  </div>
+
+  <div class="actions">
+    <div class="select-wrapper">
+      <select name="Type" id="type" [(ngModel)]="type" (ngModelChange)="onSearchChange(searchbar.value)">
+        <option value="all">All Types</option>
+        <option value="stock">Stock</option>
+        <option value="crypto">Crypto</option>
+        <option value="etf">ETF</option>
+        <option value="fund">Fund</option>
+        <option value="indx">Index</option>
+        <option value="index">Forex</option>
+      </select>
+
+      <select *ngIf="type=='stock' || type=='all' || type=='etf' || type=='fund' || type=='indx'" name="Exchange" id="exchange" [(ngModel)]="exchange" (ngModelChange)="onSearchChange(searchbar.value)">
+        <option *ngFor="let e of exchanges" [value]="e['Code']">{{e['Name']}}</option>
+      </select>
+    </div>
+
+    <button type="button" (click)="host.toggleSearch()"><i class="fa-solid fa-xmark fa-xl"></i></button>
+  </div>
+</form>
+
+<div class="watchlist">
+  <a *ngFor="let ticker of (app.user?.watchlist?.length > 0 ? app.user.watchlist : ['AAPL.US', 'MSFT.US', 'BTC-USD.CC'])" [href]="'/quote/' + ticker">
+    <div class="logo" appTickerLogo [ticker]="ticker"></div>
+    <div class="texts">
+      {{ticker}}
+    </div>
+  </a>
+</div>
+
+<ng-scrollbar class="autocomplete border-style box-shadow" thumbClass="white-scrollbars">
+  <table mat-table [dataSource]="results">
+    <ng-container matColumnDef="watchlist">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let result">
+        <button type="button" (click)="app.toggleWatchlist(result.code + '.' + result.exchange); $event.stopPropagation();">
+          <i class="fa-regular fa-bookmark fa-sm" *ngIf="!app.isLoggedIn"></i>
+          <i class="fa-regular fa-bookmark fa-sm" *ngIf="app.isLoggedIn && !app.user['watchlist'].includes(result.code + '.' + result.exchange)"></i>
+          <i class="fa-solid fa-bookmark fa-sm" style="color: #FFD700" *ngIf="app.isLoggedIn && app.user['watchlist'].includes(result.code + '.' + result.exchange)"></i>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="code">
+      <th mat-header-cell *matHeaderCellDef> Symbol </th>
+      <td mat-cell *matCellDef="let result"><div>
+        <div class="logo" appTickerLogo [ticker]="result.code + '.' + result.exchange"></div>
+        <span>{{result.code}}.{{result.exchange}}</span>
+      </div></td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let result">{{ formatLengthName(result.name) }} <i>{{result.isin}}</i></td>
+    </ng-container>
+
+    <ng-container matColumnDef="exchange">
+      <th mat-header-cell *matHeaderCellDef style="text-align: right;"> Exchange </th>
+      <td mat-cell *matCellDef="let result" style="text-align: right;"> <i>{{result.type}}</i> {{result.exchange}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <ng-container>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"
+          id="result.{{row.index}}"
+          [ngClass]="{'result': true, 'highlight': selectedRowIndex == row.index}"
+          (click)="submitSearch(row.code+'.'+row.exchange)">
+      </tr>
+    </ng-container>
+  </table>
+</ng-scrollbar>

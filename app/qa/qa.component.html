@@ -1,0 +1,91 @@
+<app-header></app-header>
+
+<h1 class="title">Question & Answers</h1>
+
+<div class="container">
+  <ul class="border-style box-shadow" [style.margin-top]="firstCategory.offsetTop + 'px'">
+    <li><h2>Summary</h2></li>
+    <li><a [style.color]="inViewId == 'insights' ? '#1bafff' : '#dad9d5'" href="/Q&A#insights">&bull;&nbsp; Insights and Approach</a></li>
+    <li><a [style.color]="inViewId == 'metrics' ? '#1bafff' : '#dad9d5'" href="/Q&A#metrics">&bull;&nbsp; Financial Metrics</a></li>
+  </ul>
+
+  <div class="content">
+    <section id="insights" class="paragraphs">
+      <h3 #firstCategory>Insights and Approach</h3>
+
+      <div class="border-style box-shadow">
+        <h2>What is the objective of Finalyzing ?</h2>
+        <p>The objective of Finalyzing is to allow more people to perfect their investments in the stock market. Indeed, short-term strategies are not reserved for individuals or even amateurs, they are reserved for professionals. With the portfolio tool, we want to democratize mathematical approaches to improve investments in the stock market. You can create a multitude of portfolios to explore all the investment combination possibilities that will allow you to have very good risk and return management. You can also stay informed about company reports, their results announcements and Internet user sentiment. Finally, with macroeconomic data, you can follow the evolution of countries over time.</p>
+      </div>
+
+      <div class="border-style box-shadow">
+        <h2>Are past performances reliable ?</h2>
+        <p>It is true that it is tempting to apply an investment strategy that has worked very well for years and that you hope will return the same, or even more. However, this is a mistake. Indeed, a strategy must be constantly updated to adapt to market fluctuations, new opportunities and emerging risks. Staying flexible and responsive is often essential to achieving your long-term financial goals.</p>
+        <p>In addition, it is not uncommon to find 'magic' strategies on the internet that promise exceptional returns. Most of the time, they are based on technical indicators or mathematical models. However, these strategies are often developed based excessively on past performance (overfitting). This can be extremely unwise because market conditions are constantly changing. Investors should realize that financial markets are subject to many unpredictable factors. It is therefore preferable to adopt a more cautious and diversified approach to minimize risks and maximize the chances of long-term success. </p>
+        <p>It is also important to note that these strategies are typically developed by quants working within financial institutions. This is one of the reasons why we offer few technical indicators. We offer the main ones because they allow you to have a fairly reliable overview of the trends of an asset.</p>
+      </div>
+
+      <div class="border-style box-shadow">
+        <h2>Why does Finalyzing not provide intra-day data ?</h2>
+        <p>You've probably noticed that we don't provide intra-day data. Our focus is on a more long to medium-term approach to stock market investment. Short-term trading is typically reserved for professionals who primarily work in financial institutions.</p>
+        <p>Broker data shows that, on average, 70 to 90% of retail traders lose money. A study conducted by the AMF from 2009 to 2012 revealed that out of 14,799 retail traders in Forex and CFDs, 13,224 incurred losses of 175 million euros, while only 1,575 made gains of 13.8 million euros. This same study demonstrated that year after year, as traders gain experience, the number of losers increases, and their losses deepen.</p>
+        <p>Furthermore, most so-called "speculative" or "hedge fund" investment funds are outperformed by the S&P 500 Index. As a result, we do not encourage the use of short-term trading strategies, which is why we have chosen to deactivate intra-day data.</p>
+      </div>
+    </section>
+
+    <section id="metrics" class="paragraphs">
+      <h3>Financial Metrics</h3>
+
+      <div class="border-style box-shadow">
+        <h2>What is beta ?</h2>
+        <p>Beta is a measure of the sensitivity of a financial asset, such as a stock or portfolio, to general market movements or a benchmark index. It indicates how the return on that asset is likely to vary in response to market fluctuations. Beta is used to assess systematic risk, i.e. market risk, as opposed to asset-specific risk.</p>
+        <p>Beta (β) = Covariance (Portfolio Return, Benchmark Return) / Variance (Benchmark Return)</p>
+        <p>• A beta equal to 1 indicates that the asset or portfolio tends to follow movements in the general market. This means that for every percentage change in the market, the asset or portfolio should also vary by approximately the same amount.</p>
+        <p>• A beta less than 1 indicates that the asset or portfolio is less sensitive to market fluctuations than the benchmark index. It is considered less risky in terms of systematic risk.</p>
+        <p>• A beta greater than 1 indicates that the asset or portfolio is more sensitive to market fluctuations than the benchmark. It is considered riskier in terms of systematic risk.</p>
+        <p>A higher beta indicates greater sensitivity to market movements, which can mean higher potential returns but also more volatility. Beta is also used to determine how an asset or portfolio will perform relative to the market under different economic conditions. For example, an asset with a beta of 0.5 should fluctuate less than the market in a general rise or fall.</p>
+      </div>
+
+      <div class="border-style box-shadow">
+        <h2>What is alpha ?</h2>
+        <p>Alpha is an important concept in finance that measures the performance of an investment or portfolio relative to a benchmark or reference market. It is used to assess an investor's ability to generate excess return over what could be achieved by passively investing in the benchmark index.</p>
+        <p>Alpha = Portfolio Return - (Risk-Free Rate + Portfolio Beta * (Benchmark Return - Risk-Free Rate))</p>
+        <p>• A positive alpha indicates that the portfolio has generated a return higher than expected given its level of risk (measured by beta).</p>
+        <p>• Negative alpha means that the portfolio has underperformed relative to its expected level of risk.</p>
+        <p>• A zero alpha (close to zero) indicates that the portfolio has performed as would be expected given its market exposure.</p>
+        <p>Positive alpha is generally considered an indication that the portfolio manager has added value by making sound investment decisions or using active strategies. However, it is essential to ensure that alpha is not the result of luck, but rather consistent skill.</p>
+      </div>
+
+      <div class="border-style box-shadow">
+        <h2>What is the Sharpe ratio ?</h2>
+        <p>The Sharpe ratio is a measure of the risk-adjusted performance of an investment or portfolio. It was developed by Nobel laureate William F. Sharpe and is widely used to assess the profitability of an investment relative to its level of risk. In other words, it helps quantify whether a higher return justifies the increased risk associated with this investment.</p>
+        <p>Sharpe Ratio = (Average Portfolio Return - Risk-free rate) / Standard deviation of Portfolio Return.</p>
+        <p>• Positive Sharpe Ratio: A positive Sharpe ratio indicates that the investment generated excess return over the risk-adjusted risk-free rate. Positive values are desirable, and the higher the ratio, the better the risk-adjusted performance.</p>
+        <p>• Sharpe ratio equal to zero: A Sharpe ratio equal to zero means that the investment generated a return equivalent to the risk-free rate when adjusting for risk. In this case, the investor was not rewarded for the risk taken.</p>
+        <p>• Negative Sharpe Ratio: A negative Sharpe ratio indicates that the investment generated a return less than the risk-adjusted risk-free rate. Negative values are generally undesirable because they mean the investor has suffered a loss by taking a risk.</p>
+        <p>The Sharpe ratio is commonly used to compare the performance of different investments or portfolios. It helps determine whether an investment has outperformed others when adjusted for risk. Investors can use the Sharpe ratio to make asset allocation decisions. A portfolio with a higher Sharpe ratio is generally preferred, as it offers a better risk/return ratio.</p>
+      </div>
+
+      <div class="border-style box-shadow">
+        <h2>What is standard deviation ?</h2>
+        <p>Standard deviation is a statistical measure of the dispersion or volatility of returns on an investment or portfolio. It indicates how much an asset or portfolio's returns vary from their average. The higher the standard deviation, the more volatile and uncertain the returns.</p>
+        <p>σ = √[Σ (Return - Average Portfolio Return)² / (N - 1)]</p>
+        <p>• A higher standard deviation indicates greater volatility of returns, meaning that returns are more dispersed from their mean. This suggests a higher level of risk for the investment.</p>
+        <p>• A lower standard deviation indicates lower volatility of returns, implying that returns are closer to their mean. This suggests a lower level of risk for the investment.</p>
+        <p>Standard deviation is essential in portfolio analysis to measure and compare the volatility of assets or portfolios. It helps investors assess the level of risk associated with an investment. Investors use standard deviation to diversify their portfolio. By including assets whose returns are not perfectly correlated, they can reduce overall portfolio risk.</p>
+      </div>
+
+      <div class="border-style box-shadow">
+        <h2>What is r-squared ?</h2>
+        <p>The coefficient of determination, often abbreviated as R-Squared or R², is a statistical measure that indicates the proportion of the variance in the returns of an investment or portfolio that can be explained by variations in its benchmark or index. walk. In other words, it quantifies the extent to which the movements of the asset or portfolio are linked to market movements.</p>
+        <p>R² = ( Covariance (Portfolio Return, Benchmark Return) / (standard deviation of Portfolio Return * standard deviation of Benchmark Return) )²</p>
+        <p>• An R² of 0 means that no variation in asset or portfolio returns can be explained by market movements. This suggests a lack of correlation with the market.</p>
+        <p>• An R² of 1 indicates perfect correlation with the market, meaning that all movements in the asset or portfolio can be explained by variations in the benchmark index.</p>
+        <p>• An R² between 0 and 1 shows to what extent performance is linked to the market. For example, an R² of 0.75 means that 75% of the variation in asset or portfolio returns is explained by the market, while the remaining 25% is attributable to other factors.</p>
+        <p>R² is used to assess the suitability of a particular benchmark for a given asset or portfolio. The higher the R², the more relevant the benchmark index is for measuring the performance of the asset or portfolio. It also allows investors to understand the extent to which their investment performance is attributable to specific market factors versus asset or portfolio specific factors.</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<app-footer></app-footer>

@@ -1,0 +1,39 @@
+<div class="content" *ngIf="quoteComponent.selectTab=='composition' && data['General']['Type'] == 'ETF'">
+  <header>
+    <h1>Composition</h1>
+  </header>
+
+  <table class="table border-style">
+    <tr>
+      <th>Name (ticker)</th>
+      <th>Sector, industry</th>
+      <th>Country, region</th>
+      <th>% of fund</th>
+    </tr>
+
+    <tr *ngFor="let item of selectedData">
+      <td>{{item["Name"]}} ({{item["Code"]}})</td>
+      <td>{{item["Sector"]}}, {{item["Industry"]}}</td>
+      <td>{{item["Country"]}}, {{item["Region"]}}</td>
+      <td>{{item['Assets_%'] > 0 ? quoteComponent.intlFormatObjs['percent'].format(item['Assets_%'] / 100) : '< 0.01%'}}</td>
+    </tr>
+  </table>
+</div>
+
+<div class="content" *ngIf="quoteComponent.selectTab=='composition' && data['General']['Type'] == 'INDEX'">
+  <header>
+    <h1>Composition</h1>
+  </header>
+
+  <table class="table border-style">
+    <tr>
+      <th>Name (ticker)</th>
+      <th>Sector, industry</th>
+    </tr>
+
+    <tr *ngFor="let item of selectedData">
+      <td>{{item["Name"]}} ({{item["Code"]}})</td>
+      <td>{{item["Sector"]}}, {{item["Industry"]}}</td>
+    </tr>
+  </table>
+</div>

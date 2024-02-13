@@ -1,0 +1,136 @@
+@import "../../styles.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: $surface-100;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.charts {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.mainChart {
+  display: flex;
+  flex-grow: 1;
+  height: 0;
+}
+
+.chartWrapper {
+  position: relative;
+  flex-grow: 1;
+  cursor: crosshair
+}
+
+.chartWrapper canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.indiChartWrapper {
+  display: flex;
+  flex-direction: column;
+  cursor: crosshair
+}
+
+.indiChartWrapper .separator {
+  position: relative;
+  height: 1px;
+  background-color:$surface-400
+}
+
+.indiChartWrapper .separator .handle {
+  position: absolute;
+  z-index: 1;
+  top: -4px;
+  left: 0;
+  height: 9px;
+  width: 100%;
+  background-color: transparent;
+  cursor: row-resize;
+}
+
+.indiChartWrapper .separator .handle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.indiChart {
+  display: flex;
+  flex-grow: 1;
+}
+
+.yAxis {
+  width: 69px;
+  height: 100%;
+  border-left: 1px solid $neutral-100;
+}
+
+.xAxisWrapper {
+  display: flex;
+  border-top: 1px solid $neutral-100;
+}
+
+.xAxis {
+  width: 0;
+  height: 40px;
+  flex-grow: 1;
+}
+
+.xAxisWrapper > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 69px;
+  height: 40px;
+  border-left: 1px solid $neutral-100;
+}
+
+.xAxisWrapper .set-scale-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.xAxisWrapper .set-scale-wrapper button {
+  font-size: 13px;
+  color: $text-200;
+}
+
+a {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 2;
+  left: 10px;
+  bottom: 10px;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+a img {
+  height: 2.5vw;
+}
+
+@media screen and (max-width: 850px) {
+  a img {
+    height: 20px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  a img {
+    height: 30px;
+  }
+}

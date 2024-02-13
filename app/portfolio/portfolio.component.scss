@@ -1,0 +1,874 @@
+@import "../../styles.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  width: 100%;
+  background: $surface-000;
+}
+
+app-header {
+  position: static;
+}
+
+.content {
+  display: flex;
+  gap: 10px;
+  flex-grow: 1;
+  overflow: hidden;
+  margin: 0 20px 20px 20px;
+}
+
+.separator {
+  height: 2px;
+  width: 100%;
+  background-color: $surface-400
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+nav header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: $surface-100;
+}
+
+nav header .user-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 1px solid $neutral-100;
+  background-color: $surface-300;
+  transition: background-color .2s;
+}
+
+nav header .user-icon i {
+  color: $text-200;
+  font-size: 16px;
+}
+
+nav input {
+  border: 1px solid $neutral-100;
+  border-radius: 5px;
+  background-color: $surface-300;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 4px 10px;
+  max-width: 100px;
+}
+
+nav header select {
+  max-width: 170px;
+  padding: 0 15px;
+  font-size: 1em;
+  text-overflow: ellipsis;
+}
+
+nav .actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 5px
+}
+
+nav .actions button {
+  padding: 4px;
+  background-color: $surface-300;
+  font-size: 0.8em;
+  font-weight: 900;
+  text-align: center
+}
+
+nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  list-style: none;
+  flex-grow: 1;
+  background: $surface-100;
+}
+
+nav li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: background-color 0.2s;
+  font-weight: 800;
+  cursor: default;
+}
+
+nav li:not(.disabled-hover) {
+  cursor: pointer;
+}
+
+nav li.selected {
+  background-color: $surface-300;
+}
+
+nav li:not(.selected, .disabled-hover):hover, nav li.editing{
+  border: 1px solid $neutral-100;
+  background-color: $surface-200;
+}
+
+nav li span {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+nav .portfolio-list {
+  margin-left: 28px;
+  padding: 0;
+}
+
+nav .portfolio-list li .actions:not(.validation) {
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+nav .portfolio-list li:hover .actions:not(.validation) {
+  opacity: 1;
+}
+
+nav .portfolio-list li .actions button {
+  padding: 2px 4px;
+}
+
+nav .portfolio-list button.blue-btn {
+  margin-top: 10px;
+  font-size: 0.9em;
+}
+
+nav .portfolio-list li {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600 !important;
+}
+
+nav .portfolio-list p {
+  color: $text-200;
+  text-align: center;
+}
+
+.details-container {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  flex-grow: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.details-container .top-section {
+  display: flex;
+  min-height: 35vh;
+  background: $surface-100;
+  overflow: hidden;
+}
+
+.top-section .pie-charts {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 30px 0;
+  border-right: 1px solid $neutral-100;
+}
+
+.carousel-container {
+  display: flex;
+  width: 100%;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.carousel-wrapper {
+  display: flex;
+  flex-grow: 1;
+  transition: transform 0.3s ease;
+}
+
+.top-section .pie-charts canvas {
+  min-height: 50% !important;
+  max-height: 80% !important;
+  width: 100% !important;
+}
+
+.top-section .pie-charts .actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30px;
+}
+
+.top-section .pie-charts .premium-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80%;
+  animation: fadeIn .2s linear;
+}
+
+.top-section .pie-charts .premium-feature button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 15px;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.2s;
+  color: $text-100;
+  background-color: $primary-100
+}
+
+.top-section .line-chart {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.top-section .chart-container {
+  display: flex;
+  flex-grow: 1;
+}
+
+.top-section .chart-container canvas {
+  flex-grow: 1;
+  width: 0 !important;
+}
+
+.top-section .chart-options {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+.top-section .chart-options label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background-color: $surface-300;
+  color: $text-200;
+  border: 1px solid $neutral-100;
+  transition: background-color 0.2s;
+}
+
+.top-section .chart-options label:hover {
+  background-color: $surface-400;
+}
+
+.details-container .bottom-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.details-container .stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  height: 100%;
+  width: fit-content;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-size: 0.8em;
+  text-align: center;
+  white-space: nowrap;
+  background: $surface-100;
+}
+
+.details-container .stats table {
+  font-size: 1.1em;
+}
+
+.details-container .stats table mat-spinner {
+  stroke: $surface-500;
+}
+
+.details-container .stats canvas {
+  width: 100% !important;
+}
+
+.details-container .stats .chart-wrapper div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.valuation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: $text-100;
+}
+
+.stats h1 {
+  max-width: 275px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats h2 {
+  color: $text-200;
+  font-weight: 600;
+}
+
+.stats .params {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.stats .param-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.stats .ticker {
+  padding: 4px;
+  font-size: 1em;
+}
+
+.stats .ticker div {
+  height: 20px;
+  width: 20px;
+}
+
+.stats .risk-free-rate-input {
+  display: flex;
+  gap: 5px;
+  height: 100%;
+  width: 100%;
+}
+
+.stats .risk-free-rate-input input {
+  flex-grow: 1;
+  width: 0;
+  padding: 3px 10px;
+  background-color: $text-100;
+  color: black;
+}
+
+.stats .risk-free-rate-input button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.blue-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 15px;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.2s;
+  color: $text-100;
+  background-color: $primary-100
+}
+
+.blue-btn:hover {
+  background-color: $primary-200
+}
+
+.green-btn {
+  width: auto;
+  color: $text-100 !important;
+  transition: background-color 0.2s;
+}
+
+.green-btn:hover {
+  background-color: #006633
+}
+
+.red-btn {
+  width: auto;
+  color: $text-100 !important;
+  transition: background-color 0.2s;
+}
+
+.red-btn:hover {
+  background-color: #990021
+}
+
+.gray-btn {
+  width: auto;
+  transition: background-color 0.2s;
+}
+
+.gray-btn:hover {
+  background-color: rgba(217, 217, 217, 0.2)
+}
+
+.benchmark-ticker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ticker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 5px;
+  min-height: 30px;
+  background-color: $text-100;
+  color: black;
+  font-size: 1.1em;
+  font-weight: 900;
+  transition: background-color 0.2s;
+}
+
+.ticker:hover {
+  background-color: $text-200;
+}
+
+.ticker div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 23px;
+  width: 23px;
+  padding: 5px;
+  box-sizing: border-box;
+  color: black;
+  font-size: 14px;
+  font-weight: 700;
+  background-color: white;
+  border-radius: 50%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 1px solid #e1e1e1;
+}
+
+.portfolios {
+  --grid-layout-gap: 10px;
+  --grid-column-count: 2;
+  --grid-item--min-width: 375px;
+
+  --gap-count: calc(var(--grid-column-count) - 1);
+  --total-gap-width: calc(var(--gap-count) * var(--grid-layout-gap));
+  --grid-item--max-width: calc((100% - var(--total-gap-width)) / var(--grid-column-count));
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(max(var(--grid-item--min-width), var(--grid-item--max-width)), 1fr));
+  grid-gap: var(--grid-layout-gap);
+  flex-grow: 1;
+}
+
+.portfolio {
+  display: flex;
+  gap: 5%;
+  padding: 30px;
+  font-size: 0.8em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .2s;
+  background: $surface-100;
+}
+
+.portfolio h1 {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.portfolio:hover, .portfolio.active {
+  background-color: $surface-200;
+}
+
+.portfolio .left-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.portfolio .left-section .value {
+  text-transform: capitalize;
+}
+
+.portfolio .chart-preview-container {
+  display: flex;
+  flex-grow: 1;
+}
+
+.portfolio .chart-preview-container canvas {
+  flex-grow: 1;
+  width: 0 !important;
+}
+
+.position-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.position-wrapper .tabs {
+  width: fit-content;
+  background: $surface-200;
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+}
+
+.position-wrapper .tabs button {
+  padding: 5px 20px;
+}
+
+.position-wrapper .tabs button.selected {
+  background: $surface-300;
+  border: 1px solid $neutral-100;
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 5px 20px 5px rgba(10, 10, 10, 0.5);
+}
+
+.positions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.positions table {
+  border-radius: 0 10px 10px 10px;
+}
+
+.positions .close {
+  padding: 1px 7px;
+}
+
+.positions .blue-btn {
+  padding: 5px 20px;
+}
+
+.details-container table .value {
+  font-size: 0.8em;
+  padding: 2px 7px;
+  margin-left: 5px;
+}
+
+.details-container table .position-action {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.details-container table .position-action div {
+  display: flex;
+  gap: 10px;
+}
+
+.loading-screen {
+  position: relative;
+}
+
+.loading-screen mat-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  stroke: $surface-500;
+}
+
+.loading-trade-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(108, 108, 108, 0.2);
+}
+
+.loading-trade-screen mat-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  stroke: $surface-500;
+}
+
+.loading-screen .loading-card {
+  background: linear-gradient(-90deg, $surface-100 45%, rgba($surface-200, 0.5) 50%, $surface-100 60%, $surface-100 100%), $surface-100;
+  background-size: 200% 200%;
+  animation: loadingGradient 1s ease infinite;
+}
+
+.loading-screen .stats {
+  width: 20%;
+}
+
+.loading-screen .positions {
+  flex-grow: 1;
+  height: 100%;
+  box-sizing: border-box;
+  background: $surface-100;
+}
+
+.no-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  gap: 30px;
+  background: $surface-100;
+}
+
+.no-content button {
+  padding: 10px 20px;
+  font-size: 1.2em;
+}
+
+.panel-background {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba($surface-100, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.panel-background > form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 60vw;
+  max-width: 300px;
+  padding: 20px;
+  background: $surface-200
+}
+
+.panel-background > .introduction-form {
+  gap: 30px;
+  max-width: 400px;
+}
+
+.panel-background > .introduction-form .gray-btn {
+  border: 1px solid transparent;
+  transition: background-color 0.2s;
+}
+
+.panel-background > .introduction-form .gray-btn:hover {
+  border: 1px solid $neutral-100;
+  background-color: rgba(217, 217, 217, 0.2)
+}
+
+.introduction-form .cards-container {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+
+.introduction-form .cards-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.introduction-form .cards-wrapper .card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  gap: 5px;
+  padding: 20px;
+  min-width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+  background-color: $surface-300;
+  transition: transform 0.3s ease;
+  text-align: center;
+}
+
+.introduction-form .cards-wrapper .card h2 {
+  font-size: 1.3em;
+}
+
+.introduction-form .cards-wrapper .card p {
+  font-size: 1em;
+}
+
+.panel-background > .introduction-form .actions-container {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.panel-background > form h1 {
+  width: 100%;
+  font-size: 1.7em;
+  text-align: center;
+}
+
+.panel-background > form .input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.panel-background > form input[type="text"],
+.panel-background > form input[type="date"] {
+  border: 1px solid $neutral-100;
+  border-radius: 5px;
+  background-color: $surface-300;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 5px 10px;
+}
+
+.add-group-panel > form .visibility {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px;
+  width: fit-content;
+  overflow: hidden;
+}
+
+.add-group-panel > form .visibility input[type="radio"] {
+  display: none;
+}
+
+.add-group-panel > form .visibility label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 0.75em;
+  opacity: 0.7;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.add-group-panel > form input[type="radio"]+label:hover {
+  opacity: 0.9;
+}
+
+.add-group-panel > form input[type="radio"]:checked+label {
+  color: white;
+  opacity: 1;
+}
+
+.add-group-panel > form input[type="radio"]:checked+label.pos {
+  background-color: $green-200;
+  border: 1px solid $green-100
+}
+
+.add-group-panel > form input[type="radio"]:checked+label.neu {
+  background-color: $text-200;
+  color: black;
+}
+
+.add-group-panel > form input[type="radio"]:checked+label.neg {
+  background-color: $red-200;
+  border: 1px solid $red-100
+}
+
+.add-group-panel > form input[type="radio"]:checked+label.blue {
+  background-color: $blue-200;
+  border: 1px solid $blue-100
+}
+
+.add-group-panel > form p {
+  color: $text-100;
+  font-size: 0.8em;
+  font-weight: 400;
+}
+
+.add-group-panel > form .actions-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 20px;
+}
+
+.add-position-panel > form .ticker {
+  font-size: 0.9em;
+}
+
+.add-position-panel > form .ticker.selected {
+  width: fit-content;
+}
+
+.add-position-panel > form .ticker.not-selected {
+  font-weight: 600;
+  padding: 5px 10px
+}
+
+.add-position-panel > form .buy-sell-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+@keyframes loadingGradient {
+  0% {
+    background-position: 115% 0%;
+  }
+  100% {
+    background-position: -20% 0%;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  body {
+    font-size: 11px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  body {
+    font-size: 16px;
+  }
+}

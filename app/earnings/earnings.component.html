@@ -1,0 +1,41 @@
+<div *ngIf="quoteComponent.selectTab=='earnings'" class="content">
+  <header>
+    <h1>Earnings</h1>
+  </header>
+
+  <div class="table-container">
+    <table class="table border-style">
+      <tr>
+        <th>Quarter</th>
+        <th>Report Date</th>
+        <th>EPS</th>
+        <th>Forecast</th>
+        <th>Difference</th>
+      </tr>
+      <tr *ngFor="let date of getDates(data['Earnings']['History']); let i = index">
+        <td [ngStyle]="{'font-weight': isCurrentQuarter(date) ? 'bold' : 'normal'}"><span *ngIf="isCurrentQuarter(date)">•</span> {{ dateFormat(data['Earnings']['History'][date]['date'], 'monthYear') }}</td>
+        <td [ngStyle]="{'filter': i > 12 && (!app.isLoggedIn || !app.user['premium']) ? 'blur(7px)' : 'blur(0)'}">
+          {{ dateFormat(data['Earnings']['History'][date]['reportDate'], 'fullDate') }}
+          {{ data['Earnings']['History'][date]['beforeAfterMarket'] === 'AfterMarket' ? '(PM)' : '' }}
+          {{ data['Earnings']['History'][date]['beforeAfterMarket'] === 'BeforeMarket' ? '(AM)' : '' }}
+        </td>
+        <td [ngStyle]="{'filter': i > 12 && (!app.isLoggedIn || !app.user['premium']) ? 'blur(7px)' : 'blur(0)'}">
+          {{ data['Earnings']['History'][date]['epsActual'] ? quoteComponent.intlFormatObjs['decimal'].format(data['Earnings']['History'][date]['epsActual']) : (i > 12 && (!app.isLoggedIn || !app.user['premium']) ? 'Not' : '-') }}
+        </td>
+        <td [ngStyle]="{'filter': i > 12 && (!app.isLoggedIn || !app.user['premium']) ? 'blur(7px)' : 'blur(0)'}">
+          {{ data['Earnings']['History'][date]['epsEstimate'] ? quoteComponent.intlFormatObjs['decimal'].format(data['Earnings']['History'][date]['epsEstimate']) : (i > 12 && (!app.isLoggedIn || !app.user['premium']) ? 'That' : '-') }}
+        </td>
+        <td [ngStyle]="{'filter': i > 12 && (!app.isLoggedIn || !app.user['premium']) ? 'blur(7px)' : 'blur(0)', 'color': (i > 12 && (!app.isLoggedIn || !app.user['premium']) ? getRandomColor(date) : getColor(data['Earnings']['History'][date]['epsDifference']))}">
+          {{ data['Earnings']['History'][date]['surprisePercent'] ? quoteComponent.intlFormatObjs['percent'].format(data['Earnings']['History'][date]['surprisePercent'] / 100) + ' (' + quoteComponent.intlFormatObjs['decimal'].format(data['Earnings']['History'][date]['epsDifference']) + ')' : (i > 12 && (!app.isLoggedIn || !app.user['premium']) ? 'Easy (only 15$/M)' : '-') }}
+        </td>
+      </tr>
+    </table>
+
+    <div *ngIf="getDates(data['Earnings']['History']).length > 12 && (!app.isLoggedIn || !app.user['premium'])" class="premium-feature">
+      <h2 class="text-shadow">Premium Feature</h2>
+      <button type="button" (click)="showPremiumPopup=true" class="box-shadow">Learn More</button>
+    </div>
+  </div>
+</div>
+
+<app-premium-popup *ngIf="showPremiumPopup" src="earnings" [host]="this"></app-premium-popup>

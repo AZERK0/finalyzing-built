@@ -1,0 +1,654 @@
+<app-header></app-header>
+
+<div class="content">
+  <nav>
+    <header *ngIf="isExternalAccount" class="border-style">
+      <div class="user-icon"><i class="fa-regular fa-user"></i></div>
+
+      <h1>{{externalAccountUsername}}</h1>
+    </header>
+
+    <header class="border-style">
+      <select [disabled]="!isAllGroupLoaded" *ngIf="!isEditingGroup" [ngModel]="group" (ngModelChange)="changeGroup($event)">
+        <option *ngFor="let g of groups" [ngValue]="g">{{g['name']}}</option>
+      </select>
+      <div *ngIf="!isEditingGroup && !isExternalAccount" class="actions border-style">
+        <button type="button" [disabled]="!isAllGroupLoaded" (click)="isCreatingGroup = true"><i class="fa-solid fa-folder-plus fa-lg"></i></button>
+        <button type="button" [disabled]="!isAllGroupLoaded" (click)="isEditingGroup = true"><i class="fa-solid fa-pen-to-square fa-lg"></i></button>
+        <button type="button" [disabled]="!isAllGroupLoaded" (click)="isDeletingGroup = group"><i class="fa-solid fa-trash fa-lg"></i></button>
+      </div>
+
+      <input *ngIf="isEditingGroup" [(ngModel)]="groupNameInputValue" placeholder="New name" minlength="2" maxlength="30">
+      <div *ngIf="isEditingGroup" class="actions border-style">
+        <button type="button" (click)="isEditingGroup = false; groupNameInputValue = ''"><i class="fa-solid fa-xmark fa-lg"></i></button>
+        <button type="button" (click)="group.edit(groupNameInputValue, group['visibility']); isEditingGroup = false; groupNameInputValue = ''"><i class="fa-solid fa-check fa-lg"></i></button>
+      </div>
+    </header>
+
+    <ul class="border-style">
+      <li (click)="selectTab = 'overview'; displayedData = ['value']; updateDividend().then(); data['group']['benchmarkData'] = getPercentageVariationHistoryBenchmark(data[benchmarkTicker], 'group')" [ngClass]="{'selected': selectTab === 'overview'}"><i class="fa-solid fa-bars"></i> Overview</li>
+
+      <li class="disabled-hover"><i class="fa-solid fa-chart-line"></i> Portfolios</li>
+      <ul class="portfolio-list">
+        <li *ngFor="let p of group.portfolios" (click)="selectTab = 'portfolio'; changePortfolio(p)" [style.pointer-events]="isAllGroupLoaded ? 'auto' : 'none'" [ngClass]="{'selected': portfolio === p && selectTab === 'portfolio', 'editing': isEditingPortfolio === p}">
+          <span *ngIf="isEditingPortfolio != p">{{p['name']}}</span>
+          <div *ngIf="isEditingPortfolio != p && !isExternalAccount" class="actions border-style">
+            <button type="button" (click)="isEditingPortfolio = p; $event.stopPropagation()"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button type="button" (click)="isDeletingPortfolio = p; $event.stopPropagation()"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <input *ngIf="isEditingPortfolio == p" (click)="$event.stopPropagation()" [(ngModel)]="portfolioNameInputValue" placeholder="New name" minlength="2" maxlength="30">
+          <div *ngIf="isEditingPortfolio == p" class="actions validation border-style">
+            <button type="button" (click)="isEditingPortfolio = false; portfolioNameInputValue = ''; $event.stopPropagation()"><i class="fa-solid fa-xmark fa-lg"></i></button>
+            <button type="button" (click)="p.edit(portfolioNameInputValue); isEditingPortfolio = false; portfolioNameInputValue = ''; $event.stopPropagation()"><i class="fa-solid fa-check fa-lg"></i></button>
+          </div>
+        </li>
+        <p *ngIf="group.portfolios.length === 0">No portfolios</p>
+        <button type="button" [disabled]="!isAllGroupLoaded" *ngIf="!isExternalAccount" (click)="isCreatingPortfolio=true" class="blue-btn"><i class="fa-solid fa-wallet"></i>&nbsp; Add portfolio</button>
+      </ul>
+    </ul>
+  </nav>
+
+  <div *ngIf="selectTab == 'overview' && groups.length > 0 && group.portfolios.length > 0 && data['group']['value']" class="details-container">
+    <div *ngIf="allPositions.length > 0" class="top-section border-style">
+      <div class="pie-charts" *ngIf="allPositions.length > 0">
+        <div class="carousel-container">
+          <div [style.width]="stats.offsetWidth +'px'" class="carousel-wrapper" [ngStyle]="{'transform': 'translateX(-' + selectedDistribution * 100 + '%)'}"  [style.filter]="app.isLoggedIn && (app.user['premium'] || selectedDistribution == 0) ? 'blur(0)': 'blur(7px)'">
+            <canvas baseChart [data]="getPieChartConfig(this.group.portfolios)['data']" [options]="getPieChartConfig(this.group.portfolios)['options']" [type]="getPieChartConfig(this.group.portfolios)['type']" (mouseout)="onPieChartMouseOut()" (chartClick)="onPieChartClick($event)" width="0"></canvas>
+            <canvas baseChart [data]="getPieChartConfigDistribution(this.group.typeDistribution)['data']" [options]="getPieChartConfigDistribution(this.group.typeDistribution)['options']" [type]="getPieChartConfigDistribution(this.group.typeDistribution)['type']" width="0" height="0"></canvas>
+            <canvas baseChart [data]="getPieChartConfigDistribution(this.group.countryDistribution)['data']" [options]="getPieChartConfigDistribution(this.group.countryDistribution)['options']" [type]="getPieChartConfigDistribution(this.group.countryDistribution)['type']" width="0" height="0"></canvas>
+            <canvas baseChart [data]="getPieChartConfigDistribution(this.group.sectorDistribution)['data']" [options]="getPieChartConfigDistribution(this.group.sectorDistribution)['options']" [type]="getPieChartConfigDistribution(this.group.sectorDistribution)['type']" width="0" height="0"></canvas>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="button" class="chevron-left" (click)="changeDistribution(-1)">
+            <i class="fa-solid fa-chevron-left fa-xl text-shadow"></i>
+          </button>
+          <h1>{{selectedDistribution == 0 ? 'Portfolios' : selectedDistribution == 1 ? 'Types' : selectedDistribution == 3 ? 'Sectors' : 'Countries'}}</h1>
+          <button type="button" class="chevron-right" (click)="changeDistribution(1)">
+            <i class="fa-solid fa-chevron-right fa-xl text-shadow"></i>
+          </button>
+        </div>
+        <div *ngIf="!app.isLoggedIn || (!app.user['premium'] && selectedDistribution != 0)" class="premium-feature">
+          <h2 class="text-shadow">Premium Feature</h2>
+          <button (click)="showPremiumPopup=true" class="box-shadow">Learn More</button>
+        </div>
+      </div>
+      <div class="line-chart">
+        <div class="chart-container">
+          <canvas baseChart #groupChart [data]="config['data']" [options]="config['options']" [type]="config['type']" height="0"></canvas>
+        </div>
+        <div class="chart-options">
+          <label><input type="checkbox" [ngModel]="displayedData.includes('value')" (click)="changeDisplayedData('value')"> Value (USD)</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('percentageVar')" (click)="changeDisplayedData('percentageVar')"> Return (%)</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('meanVar')" (click)="changeDisplayedData('meanVar')"> Mean Return (%)</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes(benchmarkTicker)" (click)="changeDisplayedData(benchmarkTicker)"> {{benchmarkTicker}} (%)</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('standardDeviation')" (click)="changeDisplayedData('standardDeviation')"> Standard Deviation</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('alpha')" (click)="changeDisplayedData('alpha')"> Alpha</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('beta')" (click)="changeDisplayedData('beta')"> Beta</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('sharpe')" (click)="changeDisplayedData('sharpe')"> Sharpe</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('rSquared')" (click)="changeDisplayedData('rSquared')"> R-Squared</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('dividends')" (click)="changeDisplayedData('dividends')"> Dividends (USD)</label>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="allPositions.length == 0" class="no-content border-style">
+      <h1>No position in this group</h1>
+    </div>
+
+    <div class="bottom-section">
+      <div #stats class="stats border-style">
+        <h1>{{group['name']}}</h1>
+
+        <div class="valuation">
+          <h2>{{intlFormatObjs['currency'].format(data['group']['value'].slice(-1)[0]['y'])}}</h2> <span class="value" [ngClass]="{'pos': data['group']['percentageVar'].slice(-1)[0]['y'] > 0, 'neg': data['group']['percentageVar'].slice(-1)[0]['y'] < 0}">{{intlFormatObjs['decimal'].format(data['group']['value'].slice(-1)[0]['y'] - data['group']['value'][0]['y'])}} ({{intlFormatObjs['percent'].format(data['group']['percentageVar'].slice(-1)[0]['y'] / 100)}})</span>
+        </div>
+
+        <table class="table border-style box-shadow">
+          <tr>
+            <td>Invested capital</td>
+            <td>{{intlFormatObjs['currency'].format(totalInvestedCapital('group'))}}</td>
+          </tr>
+        </table>
+
+        <button class="blue-btn" type="button" (click)="exportArrayToExcel('group')"><i class="fa-solid fa-file-arrow-down"></i>&nbsp; Export to excel</button>
+
+        <div class="separator"></div>
+
+        <div class="params">
+          <div class="param-container">
+            <label for="benchmark-ticker-container">Benchmark Ticker</label>
+            <div class="benchmark-ticker-container" id="benchmark-ticker-container">
+              <button class="ticker border-style" type="button" (click)="changeBenchmarkTicker()">
+                <div appTickerLogo [ticker]="benchmarkTicker"></div> {{benchmarkTicker}}
+              </button>
+            </div>
+          </div>
+
+          <div class="param-container">
+            <label for="risk-free-rate">Risk Free Rate</label>
+            <div class="risk-free-rate-input" id="risk-free-rate">
+              <input #riskFreeRateInput type="number" class="border-style" placeholder="Risk free rate" [value]="riskFreeRate">
+              <button type="button" class="blue-btn" (click)="changeRiskFreeRate(riskFreeRateInput.valueAsNumber)"><i class="fa-solid fa-check fa-lg"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <table class="table border-style box-shadow">
+          <tr>
+            <td>Standard deviation</td>
+            <td *ngIf="data['group']['standardDeviation']">{{intlFormatObjs['percent'].format(data['group']['standardDeviation'].slice(-1)[0]['y']/100)}}</td>
+            <td *ngIf="!data['group']['standardDeviation'] && allPositions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="allPositions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>Mean Return (%)</td>
+            <td *ngIf="data['group']['meanVar']">{{intlFormatObjs['percent'].format(data['group']['meanVar'].slice(-1)[0]['y']/100)}}</td>
+            <td *ngIf="!data['group']['meanVar'] && allPositions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="allPositions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>Beta</td>
+            <td *ngIf="data['group']['beta']">{{intlFormatObjs['decimal'].format(data['group']['beta'].slice(-1)[0]['y'])}}</td>
+            <td *ngIf="!data['group']['beta'] && allPositions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="allPositions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>Alpha</td>
+            <td *ngIf="data['group']['alpha']">{{intlFormatObjs['decimal'].format(data['group']['alpha'].slice(-1)[0]['y'])}}</td>
+            <td *ngIf="!data['group']['alpha'] && allPositions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="allPositions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>Sharpe</td>
+            <td *ngIf="data['group']['sharpe']">{{intlFormatObjs['decimal'].format(data['group']['sharpe'].slice(-1)[0]['y'])}}</td>
+            <td *ngIf="!data['group']['sharpe'] && allPositions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="allPositions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>R-Squared</td>
+            <td *ngIf="data['group']['rSquared']">{{intlFormatObjs['decimal'].format(data['group']['rSquared'].slice(-1)[0]['y'])}}</td>
+            <td *ngIf="!data['group']['rSquared'] && allPositions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="allPositions.length === 0">-</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="portfolios">
+        <ng-container *ngFor="let p of group.portfolios">
+          <div *ngIf="data[p['id']]" (click)="selectTab = 'portfolio'; changePortfolio(p)" id="portfolio" class="portfolio border-style">
+            <div class="left-section">
+              <h1>{{p['name']}}</h1>
+
+              <div class="valuation">
+                <h2>{{intlFormatObjs['currency'].format(data[p['id']]['value'].slice(-1)[0]['y'])}}</h2> <span class="value" [ngClass]="{'pos': data[p['id']]['percentageVar'].slice(-1)[0]['y'] > 0, 'neg': data[p['id']]['percentageVar'].slice(-1)[0]['y'] < 0}">{{intlFormatObjs['decimal'].format(data[p['id']]['value'].slice(-1)[0]['y'] - data[p['id']]['value'][0]['y'])}} ({{intlFormatObjs['percent'].format(data[p['id']]['percentageVar'].slice(-1)[0]['y'] / 100)}})</span>
+              </div>
+
+              <span class="value" [ngClass]="{'neu': p['type'] === 'manual', 'pos': p['type'] === 'automatic', 'blue': p['type'] === 'demo'}">{{p['type']}}</span>
+            </div>
+
+            <div class="chart-preview-container">
+              <canvas baseChart #previewChart [data]="getPreviewConfig(data[p['id']]['value'])['data']" [options]="getPreviewConfig(data[p['id']]['value'])['options']" [type]="getPreviewConfig(data[p['id']]['value'])['type']" height="0"></canvas>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="selectTab == 'portfolio' && groups.length > 0 && group.portfolios.length > 0" class="details-container">
+    <div *ngIf="portfolio!.positions.length > 0" class="top-section border-style">
+      <div class="line-chart">
+        <div class="chart-container">
+          <canvas baseChart #portfolioChart [data]="config['data']" [options]="config['options']" [type]="config['type']" height="0"></canvas>
+        </div>
+        <div class="chart-options">
+          <label><input type="checkbox" [ngModel]="displayedData.includes('value')" (click)="changeDisplayedData('value')"> Value (USD)</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('percentageVar')" (click)="changeDisplayedData('percentageVar')"> Return (%)</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('meanVar')" (click)="changeDisplayedData('meanVar')"> Mean Return (%)</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes(benchmarkTicker)" (click)="changeDisplayedData(benchmarkTicker)"> {{benchmarkTicker}} (%)</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('standardDeviation')" (click)="changeDisplayedData('standardDeviation')"> Standard Deviation</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('alpha')" (click)="changeDisplayedData('alpha')"> Alpha</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('beta')" (click)="changeDisplayedData('beta')"> Beta</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('sharpe')" (click)="changeDisplayedData('sharpe')"> Sharpe</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('rSquared')" (click)="changeDisplayedData('rSquared')"> R-Squared</label>
+          <label><input type="checkbox" [ngModel]="displayedData.includes('dividends')" (click)="changeDisplayedData('dividends')"> Dividends (USD)</label>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="portfolio!.positions.length == 0" class="no-content border-style">
+      <h1>No position in this portfolio</h1>
+      <button type="button" *ngIf="!isExternalAccount" (click)="createPosition(1)" class="blue-btn">Add position</button>
+    </div>
+
+    <div class="bottom-section">
+      <div class="stats border-style">
+        <h1>{{portfolio['name']}}</h1>
+
+        <div *ngIf="portfolio.type == 'manual'" class="valuation">
+          <h2>{{intlFormatObjs['currency'].format(data[portfolio['id']]['value'].slice(-1)[0]['y'])}}</h2> <span class="value" [ngClass]="{'pos': data[portfolio['id']]['percentageVar'].slice(-1)[0]['y'] > 0, 'neg': data[portfolio['id']]['percentageVar'].slice(-1)[0]['y'] < 0}">{{intlFormatObjs['decimal'].format(data[portfolio['id']]['value'].slice(-1)[0]['y'] - data[portfolio['id']]['value'][0]['y'])}} ({{intlFormatObjs['percent'].format(data[portfolio['id']]['percentageVar'].slice(-1)[0]['y'] / 100)}})</span>
+        </div>
+
+        <div *ngIf="portfolio.type == 'demo'" class="valuation">
+          <h2>{{intlFormatObjs['currency'].format(10000 + data[portfolio['id']]['value'].slice(-1)[0]['y'] - data[portfolio['id']]['value'][0]['y'])}}</h2> <span class="value" [ngClass]="{'pos': data[portfolio['id']]['percentageVar'].slice(-1)[0]['y'] > 0, 'neg': data[portfolio['id']]['percentageVar'].slice(-1)[0]['y'] < 0}">{{intlFormatObjs['decimal'].format(data[portfolio['id']]['value'].slice(-1)[0]['y'] - data[portfolio['id']]['value'][0]['y'])}} ({{intlFormatObjs['percent'].format(data[portfolio['id']]['percentageVar'].slice(-1)[0]['y'] / 100)}})</span>
+        </div>
+
+        <table class="table border-style box-shadow">
+          <tr>
+            <td>Invested capital</td>
+            <td *ngIf="portfolio.type == 'manual'">{{intlFormatObjs['currency'].format(totalInvestedCapital('investedManual'))}}</td>
+            <td *ngIf="portfolio.type == 'demo'">{{intlFormatObjs['currency'].format(totalInvestedCapital('invested'))}}</td>
+          </tr>
+          <tr *ngIf="portfolio.type == 'demo'">
+            <td>Invested capital</td>
+            <td>{{intlFormatObjs['currency'].format(totalInvestedCapital('margin'))}}</td>
+          </tr>
+        </table>
+
+        <button class="blue-btn" type="button" (click)="exportArrayToExcel()"><i class="fa-solid fa-file-arrow-down"></i>&nbsp; Export to excel</button>
+
+        <div class="separator"></div>
+
+        <div class="params">
+          <div class="param-container">
+            <label for="benchmark-ticker-container">Benchmark Ticker</label>
+            <div class="benchmark-ticker-container" id="benchmark-ticker-container">
+              <button class="ticker border-style" type="button" (click)="changeBenchmarkTicker()">
+                <div appTickerLogo [ticker]="benchmarkTicker"></div> {{benchmarkTicker}}
+              </button>
+            </div>
+          </div>
+
+          <div class="param-container">
+            <label for="risk-free-rate">Risk Free Rate</label>
+            <div class="risk-free-rate-input" id="risk-free-rate">
+              <input #riskFreeRateInput type="number" class="border-style" placeholder="Risk free rate" [value]="riskFreeRate">
+              <button type="button" class="blue-btn" (click)="changeRiskFreeRate(riskFreeRateInput.valueAsNumber)"><i class="fa-solid fa-check fa-lg"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <table class="table border-style box-shadow">
+          <tr>
+            <td>Standard deviation</td>
+            <td *ngIf="data[portfolio['id']]['standardDeviation']">{{intlFormatObjs['percent'].format(data[portfolio['id']]['standardDeviation'].slice(-1)[0]['y']/100)}}</td>
+            <td *ngIf="!data[portfolio['id']]['standardDeviation'] && portfolio.positions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="portfolio.positions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>Mean Return (%)</td>
+            <td *ngIf="data[portfolio['id']]['meanVar']">{{intlFormatObjs['percent'].format(data[portfolio['id']]['meanVar'].slice(-1)[0]['y']/100)}}</td>
+            <td *ngIf="!data[portfolio['id']]['meanVar'] && portfolio.positions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="portfolio.positions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>Beta</td>
+            <td *ngIf="data[portfolio['id']]['beta']">{{intlFormatObjs['decimal'].format(data[portfolio['id']]['beta'].slice(-1)[0]['y'])}}</td>
+            <td *ngIf="!data[portfolio['id']]['beta'] && portfolio.positions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="portfolio.positions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>Alpha</td>
+            <td *ngIf="data[portfolio['id']]['alpha']">{{intlFormatObjs['decimal'].format(data[portfolio['id']]['alpha'].slice(-1)[0]['y'])}}</td>
+            <td *ngIf="!data[portfolio['id']]['alpha'] && portfolio.positions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="portfolio.positions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>Sharpe</td>
+            <td *ngIf="data[portfolio['id']]['sharpe']">{{intlFormatObjs['decimal'].format(data[portfolio['id']]['sharpe'].slice(-1)[0]['y'])}}</td>
+            <td *ngIf="!data[portfolio['id']]['sharpe'] && portfolio.positions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="portfolio.positions.length === 0">-</td>
+          </tr>
+          <tr>
+            <td>R-Squared</td>
+            <td *ngIf="data[portfolio['id']]['rSquared']">{{intlFormatObjs['decimal'].format(data[portfolio['id']]['rSquared'].slice(-1)[0]['y'])}}</td>
+            <td *ngIf="!data[portfolio['id']]['rSquared'] && portfolio.positions.length > 0"><mat-spinner diameter="15"></mat-spinner></td>
+            <td *ngIf="portfolio.positions.length === 0">-</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="position-wrapper">
+        <div class="tabs">
+          <button type="button" [ngClass]="{'selected': positionType == 'active'}" (click)="positionType = 'active'">Active</button>
+          <button type="button" [ngClass]="{'selected': positionType == 'history'}" (click)="positionType = 'history'">History</button>
+        </div>
+
+        <div class="positions" *ngIf="positionType === 'active'">
+          <table class="table border-style box-shadow">
+            <thead>
+            <tr>
+              <th class="position-action"></th>
+              <th>Ticker</th>
+              <th>Type</th>
+              <th>Entry Price</th>
+              <th>Entry Date</th>
+              <th>Volume</th>
+              <th>Value</th>
+              <th *ngIf="!isExternalAccount" class="position-action"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let position of portfolio!.positions">
+              <td *ngIf="position.closePrice == null" class="position-action">
+                <label>
+                  <input type="checkbox" [ngModel]="this.portfolio.activePositions.includes(portfolio.positions.indexOf(position))" [disabled]="this.portfolio.activePositions.length == 1 && this.portfolio.activePositions.includes(portfolio.positions.indexOf(position))" (click)="changeActivePositions(position)">
+                </label>
+              </td>
+              <td *ngIf="position.closePrice == null"><a [href]="'/quote/' + position.ticker" target="_blank">{{ position.ticker }}</a></td>
+              <td *ngIf="position.closePrice == null">{{ position.type === 'long' ? 'Long' : 'Short' }}</td>
+              <td *ngIf="position.closePrice == null">{{ position.enterPrice }}</td>
+              <td *ngIf="position.closePrice == null">{{ position.enterDate }}</td>
+              <td *ngIf="position.closePrice == null">{{ position.quantity }}</td>
+              <td *ngIf="position.type == 'short' && position.closePrice == null && isTradeLoaded">{{ intlFormatObjs['decimal'].format(position.quantity * position.enterPriceUsd + (-(data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd)*position.quantity))}} <span class="value" [ngClass]="{'pos': -(data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd) > 0, 'neg': -(data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd) < 0}">{{intlFormatObjs['decimal'].format(-(data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd)*position.quantity)}} ({{intlFormatObjs['percent'].format(-(data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd) / position.enterPriceUsd)}})</span></td>
+              <td *ngIf="position.type == 'long' && position.closePrice == null && isTradeLoaded">{{intlFormatObjs['decimal'].format(position.quantity * position.enterPriceUsd + ((data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd)*position.quantity))}} <span class="value" [ngClass]="{'pos': data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd > 0, 'neg': data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd < 0}">{{intlFormatObjs['decimal'].format((data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd)*position.quantity)}} ({{intlFormatObjs['percent'].format((data[position.ticker][data[position.ticker].length-1].y - position.enterPriceUsd) / position.enterPriceUsd)}})</span></td>
+              <td *ngIf="!isExternalAccount && position.closePrice == null" class="position-action">
+                <div>
+                  <button type="button" *ngIf="portfolio.type == 'manual'" (click)="editPosition(1, position)"><i class="fa-solid fa-pen"></i></button>
+                  <button type="button" *ngIf="portfolio.type == 'manual'" (click)="isDeletingPosition = position"><i class="fa-solid fa-trash"></i></button>
+                  <button type="button" class="value neg close red-btn" *ngIf="portfolio.type == 'demo'" (click)="closePosition(position)">Close</button>
+                  <button type="button" class="value neg close red-btn" *ngIf="portfolio.type == 'manual'" (click)="isClosingPosition = true; isEditingPosition = position; isClosingDateCorrect = true">Close</button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <button type="button" *ngIf="!isExternalAccount" class="blue-btn" (click)="createPosition(1)">Add position</button>
+        </div>
+
+        <div class="positions" *ngIf="positionType === 'history'">
+          <table class="table border-style box-shadow">
+            <thead>
+            <tr>
+              <th *ngIf="portfolio.type == 'manual'" class="position-action"></th>
+              <th>Ticker</th>
+              <th>Type</th>
+              <th>Entry Price</th>
+              <th>Entry Date</th>
+              <th>Close Price</th>
+              <th>Close Date</th>
+              <th>Volume</th>
+              <th>Value</th>
+              <th *ngIf="!isExternalAccount && portfolio.type == 'manual'" class="position-action"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let position of portfolio!.positions">
+              <td *ngIf="position.closePrice != null && portfolio.type == 'manual'" class="position-action">
+                <label>
+                  <input type="checkbox" [ngModel]="this.portfolio.activePositions.includes(portfolio.positions.indexOf(position))" [disabled]="this.portfolio.activePositions.length == 1 && this.portfolio.activePositions.includes(portfolio.positions.indexOf(position))" (click)="changeActivePositions(position)">
+                </label>
+              </td>
+              <td *ngIf="position.closePrice != null"><a [href]="'/quote/' + position.ticker" target="_blank">{{ position.ticker }}</a></td>
+              <td *ngIf="position.closePrice != null">{{ position.type === 'long' ? 'Long' : 'Short' }}</td>
+              <td *ngIf="position.closePrice != null">{{ position.enterPrice }}</td>
+              <td *ngIf="position.closePrice != null">{{ position.enterDate }}</td>
+              <td *ngIf="position.closePrice != null">{{ position.closePrice }}</td>
+              <td *ngIf="position.closePrice != null">{{ position.closeDate }}</td>
+              <td *ngIf="position.closePrice != null">{{ position.quantity }}</td>
+              <td *ngIf="position.type == 'short' && position.closePrice != null">{{intlFormatObjs['decimal'].format(position.quantity * position.closePrice)}} <span class="value" [ngClass]="{'pos': -(position.closePrice - position.enterPrice) > 0, 'neg': -(position.closePrice - position.enterPrice) < 0}">{{intlFormatObjs['decimal'].format(-(position.closePrice - position.enterPrice)*position.quantity)}} ({{intlFormatObjs['percent'].format(-(position.closePrice - position.enterPrice) / position.enterPrice)}})</span></td>
+              <td *ngIf="position.type == 'long' && position.closePrice != null">{{intlFormatObjs['decimal'].format(position.quantity * position.closePrice)}} <span class="value" [ngClass]="{'pos': position.closePrice - position.enterPrice > 0, 'neg': position.closePrice - position.enterPrice < 0}">{{intlFormatObjs['decimal'].format((position.closePrice - position.enterPrice)*position.quantity)}} ({{intlFormatObjs['percent'].format((position.closePrice - position.enterPrice) / position.enterPrice)}})</span></td>
+              <td *ngIf="!isExternalAccount && position.closePrice != null && portfolio.type == 'manual'" class="position-action">
+                <div>
+                  <button type="button" (click)="editPosition(1, position); isClosingDateCorrect = true"><i class="fa-solid fa-pen"></i></button>
+                  <button type="button" (click)="isDeletingPosition = position"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isAllGroupLoaded || groups.length == 0" class="details-container loading-screen">
+    <div class="top-section border-style" [ngClass]="{'loading-card': groups.length > 0}"></div>
+
+    <div class="bottom-section">
+      <div class="stats border-style border-style"></div>
+
+      <div class="positions border-style" [ngClass]="{'loading-card': groups.length > 0}"></div>
+    </div>
+
+    <mat-spinner *ngIf="groups.length > 0"></mat-spinner>
+  </div>
+
+  <div *ngIf="groups.length > 0 && group.portfolios.length === 0 && isAllGroupLoaded" class="no-content border-style">
+    <h1>No portfolios in this group</h1>
+    <button type="button" *ngIf="!isExternalAccount" (click)="isCreatingPortfolio=true" class="blue-btn"><i class="fa-solid fa-wallet"></i>&nbsp; Add portfolio</button>
+  </div>
+</div>
+
+<div *ngIf="isAllGroupLoaded && groups.length === 0 && !isCreatingGroup && !isExternalAccount" class="panel-background add-group-panel">
+  <form #introductionForm="ngForm" class="introduction-form border-style box-shadow">
+    <h1>Elevate Your Investment Management</h1>
+
+    <div class="cards-container">
+      <div class="cards-wrapper" [ngStyle]="{'transform': 'translateX(-' + introCard * 100 + '%)'}">
+        <div class="card border-style">
+          <h2>Unified Portfolio Management</h2>
+          <p>Effortlessly consolidate all your investments, stocks or cryptocurrencies, into one central dashboard.</p>
+        </div>
+
+        <div class="card border-style">
+          <h2>Robust Analytics</h2>
+          <p>Make informed decisions with detailed insights into your portfolio performance, historical data, and trends.</p>
+        </div>
+
+        <div class="card border-style">
+          <h2>Classify your portfolios</h2>
+          <p>Organize your portfolios into different groups, choose whether you want to make these groups private or public to share or not your performance.</p>
+        </div>
+
+        <div class="card border-style">
+          <h2>Automatic or Manual Integration</h2>
+          <p>Keep portfolios up to date with both automatic and manual integration options, ensuring hassle-free management.</p>
+        </div>
+
+        <div class="card border-style">
+          <h2>Demo Portfolios</h2>
+          <p>Create risk-free demo portfolios to test strategies and refine tactics before committing real capital.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-container">
+      <button type="button" *ngIf="introCard < 4" class="value gray-btn" (click)="isCreatingGroup = true; introCard = 0">Skip</button>
+      <button type="button" *ngIf="introCard < 4" class="blue-btn" (click)="incrementIntroCard()">Next</button>
+      <button type="button" *ngIf="introCard == 4" class="blue-btn" (click)="isCreatingGroup = true; introCard = 0">Start Now</button>
+    </div>
+  </form>
+</div>
+
+<div *ngIf="isCreatingGroup" class="panel-background add-group-panel">
+  <form #createGroupForm="ngForm" class="border-style box-shadow" (ngSubmit)="createGroup($event)">
+    <h1>Create Group</h1>
+
+    <div class="input-container">
+      <label for="groupName">Name</label>
+      <input class="border-style" type="text" id="groupName" name="name" ngModel required>
+    </div>
+
+    <div class="input-container">
+      <label for="visibility">Visibility</label>
+      <div class="visibility" id="visibility">
+        <input type="radio" [(ngModel)]="groupSelectedOption" id="groupPrivate" name="visibility" value="private" checked>
+        <label for="groupPrivate" class="value neg">Private</label>
+
+        <input type="radio" [(ngModel)]="groupSelectedOption" id="groupUnlisted" name="visibility" value="unlisted">
+        <label for="groupUnlisted" class="value neu">Unlisted</label>
+
+        <input type="radio" [(ngModel)]="groupSelectedOption" id="groupPublic" name="visibility" value="public">
+        <label for="groupPublic" class="value pos">Public</label>
+      </div>
+    </div>
+
+    <p *ngIf="groupSelectedOption == 'private'">
+      <i class="fa-regular fa-circle-question"></i>&nbsp; The group and everything it contains will only be visible to you and therefore hidden from your profile.
+    </p>
+    <p *ngIf="groupSelectedOption == 'unlisted'">
+      <i class="fa-regular fa-circle-question"></i>&nbsp; The group and everything it contains will only be visible to people who have its sharing link.
+    </p>
+    <p *ngIf="groupSelectedOption == 'public'">
+      <i class="fa-regular fa-circle-question"></i>&nbsp; The group and everything it contains will be public and visible on your profile.
+    </p>
+
+    <div class="actions-container">
+      <button type="button" class="value gray-btn" id="groupCancel" name="cancel" (click)="isCreatingGroup = false">Cancel</button>
+      <button class="blue-btn" type="submit" id="groupApply" name="apply" [disabled]="!createGroupForm.form.valid">Create</button>
+    </div>
+  </form>
+
+</div>
+
+<div *ngIf="isCreatingPortfolio" class="panel-background add-group-panel">
+  <form #createPortfolioForm="ngForm" class="border-style box-shadow" (ngSubmit)="createPortfolio($event)">
+    <h1>Create Portfolio</h1>
+
+    <div class="input-container">
+      <label for="portfolioType">Import Method</label>
+      <div class="visibility" id="portfolioType" #portfolioType>
+        <input type="radio" [(ngModel)]="portfolioSelectedOption" id="portfolioManual" name="type" value="manual" checked>
+        <label for="portfolioManual" class="value neu">Manual</label>
+
+        <input type="radio" [(ngModel)]="portfolioSelectedOption" id="portfolioAutomatic" name="type" value="automatic">
+        <label for="portfolioAutomatic" class="value pos">Automatic</label>
+
+        <input type="radio" [(ngModel)]="portfolioSelectedOption" id="portfolioDemo" name="type" value="demo">
+        <label for="portfolioDemo" class="value blue">Demo</label>
+      </div>
+    </div>
+
+    <p *ngIf="portfolioSelectedOption == 'manual'">
+      <i class="fa-regular fa-circle-question"></i>&nbsp; You will have to add each position manually.
+    </p>
+    <p *ngIf="portfolioSelectedOption == 'automatic'">
+      <i class="fa-regular fa-circle-question" style="color: #ef5e40;"></i>&nbsp; <strong style="color: #ef5e40;">Coming Soon</strong><br> You will need to choose the platform on which you want to automatically import the portfolio.
+    </p>
+    <p *ngIf="portfolioSelectedOption == 'demo'">
+      <i class="fa-regular fa-circle-question"></i>&nbsp; You will be able to practice under real conditions with this portfolio; it is impossible to modify open or closed positions.
+    </p>
+
+    <div class="input-container">
+      <label for="portfolioName">Name</label>
+      <input class="border-style" type="text" id="portfolioName" name="name" ngModel required>
+    </div>
+
+    <div class="actions-container">
+      <button type="button" class="value gray-btn" id="cancel" name="cancel" (click)="isCreatingPortfolio = false">Cancel</button>
+      <button class="blue-btn" type="submit" id="apply" name="apply" [disabled]="!createPortfolioForm.form.valid || portfolioSelectedOption == 'automatic'">Create</button>
+    </div>
+  </form>
+</div>
+
+<div *ngIf="isCreatingPosition" class="panel-background add-position-panel">
+  <form #createPositionForm="ngForm" class="position-form border-style box-shadow" (ngSubmit)="createPosition(2, $event)">
+    <h1>Add position</h1>
+
+    <div class="input-container">
+      <label for="ticker">Symbol</label>
+      <button class="ticker border-style" [ngClass]="createPositionTicker ? 'selected' : 'not-selected'" type="button" id="ticker" (click)="toggleSearch()">
+        <div appTickerLogo *ngIf="createPositionTicker" [ticker]="createPositionTicker"></div> {{createPositionTicker ? createPositionTicker : 'Select a symbol'}}
+      </button>
+    </div>
+
+    <div class="input-container" *ngIf="portfolio.type == 'manual'">
+      <label for="enterDate">Entry date</label>
+      <input class="border-style" type="date" [max]="currentDate" id="enterDate" name="enterDate" ngModel required>
+    </div>
+
+    <div class="input-container" *ngIf="portfolio.type == 'manual'">
+      <label for="enterPrice">Entry price</label>
+      <input class="border-style" type="text" id="enterPrice" name="enterPrice" ngModel required>
+    </div>
+
+    <div class="input-container">
+      <label for="quantity">Quantity</label>
+      <input class="border-style" type="text" id="quantity" name="quantity" ngModel required>
+    </div>
+
+    <div class="buy-sell-container">
+      <button class="value neg red-btn" type="submit" id="short" name="short" [disabled]="!createPositionForm.form.valid || !createPositionTicker">Sell/short</button>
+      <button class="value pos green-btn" type="submit" id="long" name="long" [disabled]="!createPositionForm.form.valid || !createPositionTicker">Buy/long</button>
+    </div>
+
+    <button type="button" class="value gray-btn" (click)="isCreatingPosition = false; submitSearchSubscription!.unsubscribe(); createPositionTicker = ''">Cancel</button>
+  </form>
+</div>
+
+<div *ngIf="isEditingPosition && portfolio.type == 'manual'" class="panel-background add-position-panel">
+  <form #editPositionForm="ngForm" class="position-form border-style box-shadow" (ngSubmit)="editPosition(2, isEditingPosition, $event); isEditingPosition = false">
+    <h1 *ngIf="!isClosingPosition">Edit position</h1>
+    <h1 *ngIf="isClosingPosition">Close position</h1>
+
+    <div *ngIf="!isClosingPosition && isEditingPosition.closePrice == null" class="input-container">
+      <label for="ticker">Symbol</label>
+      <button class="ticker border-style" [ngClass]="createPositionTicker ? 'selected' : 'not-selected'" type="button" id="editTicker" (click)="toggleSearch()">
+        <div appTickerLogo *ngIf="createPositionTicker" [ticker]="createPositionTicker"></div> {{createPositionTicker ? createPositionTicker : 'Select a symbol'}}
+      </button>
+    </div>
+
+    <div class="input-container">
+      <label *ngIf="!isClosingPosition && isEditingPosition.closePrice == null" for="enterDate">Entry date</label>
+      <label *ngIf="isClosingPosition || isEditingPosition.closePrice != null" for="enterDate">Close date</label>
+      <input #date class="border-style" type="date" [max]="currentDate" [ngModel]="isEditingPosition['enterDate']" id="editEnterDate" name="enterDate" (ngModelChange)="isCorrectDate(date.valueAsDate, isEditingPosition['enterDate'], closePrice.value)">
+    </div>
+
+    <div class="input-container">
+      <label *ngIf="!isClosingPosition && isEditingPosition.closePrice == null" for="enterPrice">Entry price</label>
+      <label *ngIf="isClosingPosition || isEditingPosition.closePrice != null" for="enterPrice">Close price</label>
+      <input #closePrice class="border-style" type="text" [ngModel]="isEditingPosition['enterPrice']" id="editEnterPrice" name="enterPrice" (ngModelChange)="isCorrectDate(date.valueAsDate, isEditingPosition['enterDate'], closePrice.value)" ngModel required>
+    </div>
+
+    <div *ngIf="!isClosingPosition" class="input-container">
+      <label for="quantity">Quantity</label>
+      <input class="border-style" type="text" [ngModel]="isEditingPosition['quantity']" id="editQuantity" name="quantity" ngModel required>
+    </div>
+
+    <div *ngIf="!isClosingPosition && isEditingPosition['closePrice'] == null" class="buy-sell-container">
+      <button class="value neg red-btn" type="submit" id="editShort" name="short" [disabled]="!editPositionForm.form.valid || !createPositionTicker">Sell/short</button>
+      <button class="value pos green-btn" type="submit" id="editLong" name="long" [disabled]="!editPositionForm.form.valid || !createPositionTicker">Buy/long</button>
+    </div>
+    <div *ngIf="!isClosingPosition && isEditingPosition['closePrice'] != null" class="buy-sell-container">
+      <button class="value neg red-btn" type="submit" id="editShortClosed" name="short" [disabled]="!editPositionForm.form.valid || !createPositionTicker || !isClosingDateCorrect">Sell/short</button>
+      <button class="value pos green-btn" type="submit" id="editLongClosed" name="long" [disabled]="!editPositionForm.form.valid || !createPositionTicker || !isClosingDateCorrect">Buy/long</button>
+    </div>
+
+    <button *ngIf="isClosingPosition" class="value neg red-btn" type="submit" id="close" name="close" [disabled]="!isClosingDateCorrect">Close</button>
+
+    <button type="button" class="value gray-btn" (click)="isClosingPosition = false; isEditingPosition = false; submitSearchSubscription!.unsubscribe(); createPositionTicker = ''">Cancel</button>
+  </form>
+</div>
+
+<div *ngIf="isDeletingGroup != null || isDeletingPortfolio != null || isDeletingPosition != null" class="panel-background add-position-panel">
+  <form class="position-form border-style box-shadow">
+    <h1>Confirm delete</h1>
+    <button type="button" *ngIf="isDeletingGroup != null" class="value neg red-btn" (click)="deleteGroup(isDeletingGroup); isDeletingGroup = null">Delete</button>
+    <button type="button" *ngIf="isDeletingPortfolio != null" class="value neg red-btn" (click)="deletePortfolio(isDeletingPortfolio); isDeletingPortfolio = null">Delete</button>
+    <button type="button" *ngIf="isDeletingPosition != null" class="value neg red-btn" (click)="deletePosition(isDeletingPosition); isDeletingPosition = null">Delete</button>
+    <button type="button" class="value gray-btn" (click)="isDeletingGroup = null; isDeletingPortfolio = null; isDeletingPosition = null">Cancel</button>
+  </form>
+</div>
+
+<div *ngIf="showNotEnoughMargin" class="panel-background add-position-panel">
+  <form class="position-form border-style box-shadow">
+    <h1>Not enough margin.</h1>
+    <button type="button" class="value gray-btn" (click)="showNotEnoughMargin = false">Cancel</button>
+  </form>
+</div>
+
+<div *ngIf="!isTradeLoaded" class="loading-trade-screen">
+  <mat-spinner></mat-spinner>
+</div>
+
+<app-search [redirect]="false" [host]="this" [ngStyle]="{'display': showSearch ? 'flex' : 'none'}"></app-search>
+
+<app-premium-popup *ngIf="showPremiumPopup" src="portfolio" [host]="this"></app-premium-popup>
